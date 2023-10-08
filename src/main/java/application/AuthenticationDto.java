@@ -14,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AuthenticationDto {
     private final Long id;
+    private final String login;
     private final String username;
     private final UUID sessionId;
     private BigDecimal balance;

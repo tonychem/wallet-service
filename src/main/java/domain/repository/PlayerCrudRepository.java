@@ -11,4 +11,6 @@ public interface PlayerCrudRepository {
     Player getById(Long id);
 
     Player getByLogin(String login);
+
+    Player getByUsername(String username);
 }

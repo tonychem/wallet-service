@@ -9,6 +9,7 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class Authentication {
     Long id;
+    String login;
     String username;
     UUID sessionID;
 }

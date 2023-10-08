@@ -3,7 +3,6 @@ package domain.service;
 import domain.exception.BadCredentialsException;
 import domain.model.dto.*;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.UUID;
 

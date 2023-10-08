@@ -20,7 +20,7 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
     @Override
     public Transaction create(MoneyTransferRequest request) {
         if (transactions.get(request.getId()) != null) throw new TransactionAlreadyExistsException(
-                String.format("Transaction with id=%s already exists", request.getId())
+                String.format("Транзакция с id=%s уже существует", request.getId())
         );
 
         Transaction transaction = Transaction.builder()
@@ -41,7 +41,7 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         Transaction transaction = transactions.get(id);
 
         if (transaction == null) throw new NoSuchTransactionException(
-                String.format("No transaction id=%s exists", id)
+                String.format("Не сущетсвует транзакции с id=%s", id)
         );
 
         return transaction;

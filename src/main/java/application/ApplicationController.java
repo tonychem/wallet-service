@@ -28,9 +28,10 @@ public class ApplicationController {
         UUID sessionId = UUID.randomUUID();
 
         Authentication authentication = new Authentication(authenticatedPlayerDto.getId(),
-                authenticatedPlayerDto.getUsername(), sessionId);
+                authenticatedPlayerDto.getLogin(), authenticatedPlayerDto.getUsername(), sessionId);
         authentications.add(sessionId);
-        return new AuthenticationDto(authentication.getId(), authentication.getUsername(),
+        return new AuthenticationDto(authentication.getId(), authentication.getLogin(),
+                authentication.getUsername(),
                 authentication.getSessionID(), authenticatedPlayerDto.getBalance());
     }
 
@@ -41,7 +42,8 @@ public class ApplicationController {
 
         authentications.add(sessionId);
 
-        return new AuthenticationDto(authenticatedPlayerDto.getId(), authenticatedPlayerDto.getUsername(),
+        return new AuthenticationDto(authenticatedPlayerDto.getId(), authenticatedPlayerDto.getLogin(),
+                authenticatedPlayerDto.getUsername(),
                 sessionId, authenticatedPlayerDto.getBalance());
     }
 
@@ -75,10 +77,25 @@ public class ApplicationController {
         return response != null;
     }
 
+    public Collection<MoneyTransferRequest> getPendingMoneyRequests(String login, UUID sessionId)
+            throws UnauthorizedOperationException {
+        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+
+        return playerService.getPendingMoneyRequests(login);
+    }
+
     public Collection<TransactionDto> getHistory(String login, PlayerAction action, UUID sessionId)
             throws UnauthorizedOperationException {
         if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
         Collection<TransactionDto> history = playerService.getHistory(login, action);
         return history;
+    }
+
+    public MoneyTransferResponse approvePendingRequest(UUID sessionId, UUID transactionId) {
+        return playerService.approvePendingMoneyRequest(transactionId);
+    }
+
+    public void signOut(UUID sessionId) {
+        authentications.remove(sessionId);
     }
 }

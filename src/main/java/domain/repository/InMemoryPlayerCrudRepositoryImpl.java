@@ -27,11 +27,11 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
                 .anyMatch(player -> player.getUsername().equals(newPlayerUsername));
 
         if (loginAlreadyExists) throw new UserAlreadyExistsException(
-                String.format("User with such login=%s already exists", newPlayerLogin)
+                String.format("Пользователь с таким логином login=%s уже существует", newPlayerLogin)
         );
 
         if (usernameAlreadyExists) throw new UserAlreadyExistsException(
-                String.format("User with such username=%s already exists", newPlayerUsername)
+                String.format("Пользователь с таким именем username=%s уже существует", newPlayerUsername)
         );
 
         Player newPlayer = Player.builder()
@@ -59,10 +59,23 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
         Player player = players.get(id);
 
         if (player == null) throw new NoSuchPlayerException(
-                String.format("User(id=%d) does not exist", id)
+                String.format("Пользователь с id=%d не существует", id)
         );
 
         return player;
+    }
+
+    @Override
+    public Player getByUsername(String username) {
+        Optional<Player> playerOp = players.values().stream()
+                .filter(player -> player.getUsername().equals(username))
+                .findAny();
+
+        return playerOp.orElseThrow(
+                () -> new NoSuchPlayerException(
+                        String.format("Пользователь с логином login=%s не существует", username)
+                )
+        );
     }
 
     @Override
@@ -73,8 +86,10 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
 
         return playerOp.orElseThrow(
                 () -> new NoSuchPlayerException(
-                        String.format("User(login=%s) does not exist", login)
+                        String.format("Пользователь с логином login=%s не существует", login)
                 )
         );
     }
+
+
 }

@@ -31,16 +31,18 @@ public class PlayerServiceImpl implements PlayerService {
     public AuthenticatedPlayerDto authenticate(String login, byte[] password) throws BadCredentialsException {
         Player player = playerRepository.getByLogin(login);
 
-        if (!Arrays.equals(player.getPassword(), password)) throw new BadCredentialsException("Incorrect password");
+        if (!Arrays.equals(player.getPassword(), password)) throw new BadCredentialsException("Некорректный пароль");
 
-        return new AuthenticatedPlayerDto(player.getId(), player.getUsername(), player.getBalance());
+        return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
+                player.getBalance());
     }
 
     @Override
     public AuthenticatedPlayerDto register(PlayerCreationRequest playerCreationRequest) throws BadCredentialsException {
         try {
             Player player = playerRepository.create(playerCreationRequest);
-            return new AuthenticatedPlayerDto(player.getId(), player.getUsername(), player.getBalance());
+            return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
+                    player.getBalance());
         } catch (UserAlreadyExistsException e) {
             throw new BadCredentialsException(e.getMessage());
         }
@@ -49,14 +51,14 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public AuthenticatedPlayerDto getBalance(String login) {
         Player player = playerRepository.getByLogin(login);
-        return new AuthenticatedPlayerDto(player.getId(), player.getUsername(),
+        return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
                 player.getBalance());
     }
 
     @Override
     public AuthenticatedPlayerDto getBalance(Long id) {
         Player player = playerRepository.getById(id);
-        return new AuthenticatedPlayerDto(player.getId(), player.getUsername(),
+        return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
                 player.getBalance());
     }
 
@@ -70,11 +72,13 @@ public class PlayerServiceImpl implements PlayerService {
     public MoneyTransferResponse requestMoneyFrom(MoneyTransferRequest moneyTransferRequest) {
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
         Player requester = playerRepository.getByLogin(moneyTransferRequest.getMoneyTo());
+        Player donor = playerRepository.getByLogin(moneyTransferRequest.getMoneyFrom());
 
         return new MoneyTransferResponse(
-                new AuthenticatedPlayerDto(requester.getId(), requester.getUsername(), requester.getBalance()),
+                new AuthenticatedPlayerDto(requester.getId(), requester.getLogin(),
+                        requester.getUsername(), requester.getBalance()),
                 new TransactionDto(transaction.getId(), transaction.getStatus(),
-                        transaction.getSender(), transaction.getRecipient(), transaction.getAmount())
+                        donor.getUsername(), transaction.getRecipient(), transaction.getAmount())
         );
     }
 
@@ -139,7 +143,7 @@ public class PlayerServiceImpl implements PlayerService {
         if (balanceAfterMoneyWithdrawal.signum() < 0) {
             transaction.setStatus(TransferRequestStatus.FAILED);
             throw new DeficientBalanceException(
-                    String.format("Not enough money on user's balance id=%d", sender.getId())
+                    String.format("Не хватает деньги на балансе игрока с id=%d", sender.getId())
             );
         }
 
@@ -148,7 +152,8 @@ public class PlayerServiceImpl implements PlayerService {
         transaction.setStatus(TransferRequestStatus.APPROVED);
 
         return new MoneyTransferResponse(
-                new AuthenticatedPlayerDto(sender.getId(), sender.getUsername(), sender.getBalance()),
+                new AuthenticatedPlayerDto(sender.getId(), sender.getLogin(), sender.getUsername(),
+                        sender.getBalance()),
                 new TransactionDto(transaction.getId(), transaction.getStatus(),
                         transaction.getSender(), transaction.getRecipient(), transaction.getAmount())
         );
