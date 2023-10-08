@@ -47,8 +47,17 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public BigDecimal getBalance(String login) {
-        return playerRepository.getByLogin(login).getBalance();
+    public AuthenticatedPlayerDto getBalance(String login) {
+        Player player = playerRepository.getByLogin(login);
+        return new AuthenticatedPlayerDto(player.getId(), player.getUsername(),
+                player.getBalance());
+    }
+
+    @Override
+    public AuthenticatedPlayerDto getBalance(Long id) {
+        Player player = playerRepository.getById(id);
+        return new AuthenticatedPlayerDto(player.getId(), player.getUsername(),
+                player.getBalance());
     }
 
     @Override

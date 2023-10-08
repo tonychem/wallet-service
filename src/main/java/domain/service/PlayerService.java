@@ -13,7 +13,9 @@ public interface PlayerService {
 
     AuthenticatedPlayerDto register(PlayerCreationRequest playerCreationRequest) throws BadCredentialsException;
 
-    BigDecimal getBalance(String login);
+    AuthenticatedPlayerDto getBalance(String login);
+
+    AuthenticatedPlayerDto getBalance(Long id);
 
     MoneyTransferResponse transferMoneyTo(MoneyTransferRequest moneyTransferRequest);
 
