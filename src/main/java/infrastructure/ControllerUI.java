@@ -51,8 +51,7 @@ public class ControllerUI {
                 Wallet-service-app
                 1. Зарегистрировать нового пользователя
                 2. Авторизоваться
-                Любая клавиша. ВЫХОД.
-                """;
+                Любая клавиша. ВЫХОД.""";
         System.out.println(landingMenu);
     }
 
@@ -186,7 +185,7 @@ public class ControllerUI {
                     }
 
                     requests.stream()
-                            .forEach(request -> System.out.printf("id операции = %s, запрос от игрока %s, сумма %.2f",
+                            .forEach(request -> System.out.printf("id операции = %s, запрос от игрока %s, сумма %.2f%n",
                                     request.getId(), request.getMoneyTo(), request.getAmount().doubleValue()));
                 } catch (UnauthorizedOperationException e) {
                     System.err.println("Ошибка авторизации! Попробуйте авторизоваться еще раз");
@@ -222,8 +221,7 @@ public class ControllerUI {
                             Введите:
                             debit - получить историю по списаниям
                             credit - получить историю по зачислениям
-                            ЛЮБОЙ СИМВОЛ - по всем операциям
-                            """;
+                            ЛЮБОЙ СИМВОЛ - по всем операциям""";
 
                     System.out.println(options);
 
@@ -355,8 +353,7 @@ public class ControllerUI {
                 4. Посмотреть запросы на списание денежных средств другим пользователям
                 5. Подтвердить запросы на списание денежных средств от других пользователей
                 6. Посмотреть Вашу историю на аккаунте
-                7. Выйти из аккаунта
-                """;
-        System.out.print(userMainMenu);
+                7. Выйти из аккаунта""";
+        System.out.println(userMainMenu);
     }
 }
