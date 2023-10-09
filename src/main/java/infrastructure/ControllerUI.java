@@ -5,6 +5,7 @@ import application.exception.UnauthorizedOperationException;
 import domain.exception.BadCredentialsException;
 import domain.exception.NoSuchPlayerException;
 import domain.exception.NoSuchTransactionException;
+import domain.exception.TransactionStatusException;
 import domain.model.dto.MoneyTransferRequest;
 import domain.model.dto.PlayerCreationRequest;
 import domain.model.dto.TransactionDto;
@@ -129,9 +130,9 @@ public class ControllerUI {
                             amount = Double.parseDouble(input);
                             if (amount < 0) throw new InputMismatchException();
                         } catch (InputMismatchException e) {
-                            System.out.println("Это отрицательное десятичное число!");
+                            System.err.println("Это отрицательное десятичное число!");
                         } catch (NumberFormatException e) {
-                            System.out.println("Это не десятичное число!");
+                            System.err.println("Это не десятичное число!");
                         }
                     }
 
@@ -159,9 +160,9 @@ public class ControllerUI {
                             amount = Double.parseDouble(input);
                             if (amount < 0) throw new InputMismatchException();
                         } catch (InputMismatchException e) {
-                            System.out.println("Это отрицательное десятичное число!");
+                            System.err.println("Это отрицательное десятичное число!");
                         } catch (NumberFormatException e) {
-                            System.out.println("Это не десятичное число!");
+                            System.err.println("Это не десятичное число!");
                         }
                     }
 
@@ -193,7 +194,7 @@ public class ControllerUI {
             }
 
             case 5 -> {
-                System.out.println("Введите id транзаций через запятую: ");
+                System.out.println("Введите id транзаций для подтверждения через запятую: ");
                 String[] transactionStringView = scan.nextLine().split(",");
                 List<UUID> ids = new ArrayList<>();
 
@@ -209,13 +210,40 @@ public class ControllerUI {
                 for (UUID id : ids) {
                     try {
                         controller.approvePendingRequest(session.getSessionId(), id);
-                    } catch (NoSuchTransactionException e) {
+                    } catch (NoSuchTransactionException | TransactionStatusException e) {
                         System.err.println(e.getMessage());
+                    } catch (UnauthorizedOperationException e) {
+                        System.err.println("Ошибка авторизации! Попробуйте авторизоваться еще раз");
                     }
                 }
             }
 
             case 6 -> {
+                System.out.println("Введите id транзаций для отмены через запятую: ");
+                String[] transactionStringView = scan.nextLine().split(",");
+                List<UUID> ids = new ArrayList<>();
+
+                for (String transaction : transactionStringView) {
+                    try {
+                        UUID id = UUID.fromString(transaction);
+                        ids.add(id);
+                    } catch (Exception e) {
+                        System.err.println("Ошибка парсинга id транзакции");
+                    }
+                }
+
+                for (UUID id : ids) {
+                    try {
+                        controller.declinePendingRequest(session.getSessionId(), id);
+                    } catch (NoSuchTransactionException | TransactionStatusException e) {
+                        System.err.println(e.getMessage());
+                    } catch (UnauthorizedOperationException e) {
+                        System.err.println("Ошибка авторизации! Попробуйте авторизоваться еще раз");
+                    }
+                }
+            }
+
+            case 7 -> {
                 try {
                     String options = """
                             Введите:
@@ -262,7 +290,7 @@ public class ControllerUI {
                 }
             }
 
-            case 7 -> {
+            case 8 -> {
                 controller.signOut(session.getSessionId());
                 this.session = null;
                 mainMenuExitHolder.setValue(Boolean.TRUE);
@@ -315,7 +343,7 @@ public class ControllerUI {
         while (authenticationDto == null) {
             try {
                 AuthenticationRequest request = gatherAuthenticationInfo(scanner);
-                authenticationDto = controller.auth(request);
+                authenticationDto = controller.authenticate(request);
             } catch (NoSuchPlayerException e) {
                 System.err.println("Не найден пользователь с указанным логином");
             } catch (BadCredentialsException e) {
@@ -352,8 +380,9 @@ public class ControllerUI {
                 3. Оставить заявку пользователю для получения денежных средств
                 4. Посмотреть запросы на списание денежных средств другим пользователям
                 5. Подтвердить запросы на списание денежных средств от других пользователей
-                6. Посмотреть Вашу историю на аккаунте
-                7. Выйти из аккаунта""";
+                6. Отклонить запросы на списание денежных средств от других пользователей
+                7. Посмотреть Вашу историю на аккаунте
+                8. Выйти из аккаунта""";
         System.out.println(userMainMenu);
     }
 }

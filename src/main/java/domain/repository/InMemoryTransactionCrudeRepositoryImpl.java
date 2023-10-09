@@ -2,6 +2,7 @@ package domain.repository;
 
 import domain.exception.NoSuchTransactionException;
 import domain.exception.TransactionAlreadyExistsException;
+import domain.exception.TransactionStatusException;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
 import domain.model.dto.MoneyTransferRequest;
@@ -41,7 +42,7 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         Transaction transaction = transactions.get(id);
 
         if (transaction == null) throw new NoSuchTransactionException(
-                String.format("Не сущетсвует транзакции с id=%s", id)
+                String.format("Не существует транзакции с id=%s", id)
         );
 
         return transaction;
@@ -83,5 +84,27 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
     @Override
     public Collection<Transaction> getCreditingTransactions(String login) {
         return getTransactionsBySenderAndRecipientAndStatus(null, login, null);
+    }
+
+    @Override
+    public Transaction approveTransaction(UUID id) {
+        Transaction transaction = getById(id);
+
+        if (!transaction.getStatus().equals(TransferRequestStatus.PENDING))
+            throw new TransactionStatusException("Только транзакции в режиме подтверждения могут быть одобрены");
+
+        transaction.setStatus(TransferRequestStatus.APPROVED);
+        return transaction;
+    }
+
+    @Override
+    public Transaction declineTransaction(UUID id) {
+        Transaction transaction = getById(id);
+
+        if (!transaction.getStatus().equals(TransferRequestStatus.PENDING))
+            throw new TransactionStatusException("Только транзакции в режиме подтверждения могут быть отклонены");
+
+        transaction.setStatus(TransferRequestStatus.DECLINED);
+        return transaction;
     }
 }

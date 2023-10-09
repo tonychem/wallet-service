@@ -2,7 +2,7 @@ package domain.service;
 
 import domain.exception.BadCredentialsException;
 import domain.exception.DeficientBalanceException;
-import domain.exception.UserAlreadyExistsException;
+import domain.exception.PlayerAlreadyExistsException;
 import domain.model.Player;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
@@ -27,6 +27,11 @@ public class PlayerServiceImpl implements PlayerService {
         this.transactionRepository = new InMemoryTransactionCrudeRepositoryImpl();
     }
 
+    public PlayerServiceImpl(PlayerCrudRepository playerRepository, TransactionCrudRepository transactionRepository) {
+        this.playerRepository = playerRepository;
+        this.transactionRepository = transactionRepository;
+    }
+
     @Override
     public AuthenticatedPlayerDto authenticate(String login, byte[] password) throws BadCredentialsException {
         Player player = playerRepository.getByLogin(login);
@@ -43,16 +48,9 @@ public class PlayerServiceImpl implements PlayerService {
             Player player = playerRepository.create(playerCreationRequest);
             return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
                     player.getBalance());
-        } catch (UserAlreadyExistsException e) {
+        } catch (PlayerAlreadyExistsException e) {
             throw new BadCredentialsException(e.getMessage());
         }
-    }
-
-    @Override
-    public AuthenticatedPlayerDto getBalance(String login) {
-        Player player = playerRepository.getByLogin(login);
-        return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
-                player.getBalance());
     }
 
     @Override
@@ -96,7 +94,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public MoneyTransferResponse approvePendingMoneyRequest(UUID requestId) {
-        Transaction transaction = transactionRepository.getById(requestId);
+        Transaction transaction = transactionRepository.approveTransaction(requestId);
 
         return transferMoneyBetweenAccounts(transaction,
                 new MoneyTransferRequest(
@@ -109,8 +107,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public void declinePendingRequest(UUID requestId) {
-        Transaction transaction = transactionRepository.getById(requestId);
-        transaction.setStatus(TransferRequestStatus.DECLINED);
+        transactionRepository.declineTransaction(requestId);
     }
 
     @Override

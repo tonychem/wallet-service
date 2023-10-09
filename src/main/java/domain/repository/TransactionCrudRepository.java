@@ -20,4 +20,8 @@ public interface TransactionCrudRepository {
     Collection<Transaction> getDebitingTransactions(String login);
 
     Collection<Transaction> getCreditingTransactions(String login);
+
+    Transaction approveTransaction(UUID id);
+
+    Transaction declineTransaction(UUID id);
 }

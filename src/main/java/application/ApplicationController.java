@@ -23,6 +23,11 @@ public class ApplicationController {
         authentications = new HashSet<>();
     }
 
+    public ApplicationController(Set<UUID> authentications, PlayerService playerService) {
+        this.authentications = authentications;
+        this.playerService = playerService;
+    }
+
     public AuthenticationDto registerUser(PlayerCreationRequest request) throws BadCredentialsException {
         AuthenticatedPlayerDto authenticatedPlayerDto = playerService.register(request);
         UUID sessionId = UUID.randomUUID();
@@ -35,7 +40,7 @@ public class ApplicationController {
                 authentication.getSessionID(), authenticatedPlayerDto.getBalance());
     }
 
-    public AuthenticationDto auth(AuthenticationRequest request) throws BadCredentialsException {
+    public AuthenticationDto authenticate(AuthenticationRequest request) throws BadCredentialsException {
         AuthenticatedPlayerDto authenticatedPlayerDto = playerService.authenticate(request.getLogin(),
                 request.getPassword());
         UUID sessionId = UUID.randomUUID();
@@ -91,8 +96,16 @@ public class ApplicationController {
         return history;
     }
 
-    public MoneyTransferResponse approvePendingRequest(UUID sessionId, UUID transactionId) {
+    public MoneyTransferResponse approvePendingRequest(UUID sessionId, UUID transactionId)
+            throws UnauthorizedOperationException {
+        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
         return playerService.approvePendingMoneyRequest(transactionId);
+    }
+
+    public void declinePendingRequest(UUID sessionId, UUID transactionId)
+            throws UnauthorizedOperationException {
+        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+        playerService.declinePendingRequest(transactionId);
     }
 
     public void signOut(UUID sessionId) {

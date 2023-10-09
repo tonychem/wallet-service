@@ -1,7 +1,7 @@
 package domain.repository;
 
 import domain.exception.NoSuchPlayerException;
-import domain.exception.UserAlreadyExistsException;
+import domain.exception.PlayerAlreadyExistsException;
 import domain.model.Player;
 import domain.model.dto.PlayerCreationRequest;
 
@@ -26,11 +26,11 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
         boolean usernameAlreadyExists = players.values().stream()
                 .anyMatch(player -> player.getUsername().equals(newPlayerUsername));
 
-        if (loginAlreadyExists) throw new UserAlreadyExistsException(
+        if (loginAlreadyExists) throw new PlayerAlreadyExistsException(
                 String.format("Пользователь с таким логином login=%s уже существует", newPlayerLogin)
         );
 
-        if (usernameAlreadyExists) throw new UserAlreadyExistsException(
+        if (usernameAlreadyExists) throw new PlayerAlreadyExistsException(
                 String.format("Пользователь с таким именем username=%s уже существует", newPlayerUsername)
         );
 
