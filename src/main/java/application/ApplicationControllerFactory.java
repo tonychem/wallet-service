@@ -1,5 +1,7 @@
 package application;
 
+import infrastructure.LoggedApplicationController;
+
 public class ApplicationControllerFactory {
     private static ApplicationController applicationController;
 
@@ -8,7 +10,7 @@ public class ApplicationControllerFactory {
 
     public static ApplicationController getInstance() {
         if (applicationController == null) {
-            applicationController = new ApplicationController();
+            applicationController = new LoggedApplicationController();
         }
         return applicationController;
     }

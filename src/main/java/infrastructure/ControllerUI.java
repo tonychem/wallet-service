@@ -209,7 +209,7 @@ public class ControllerUI {
 
                 for (UUID id : ids) {
                     try {
-                        controller.approvePendingRequest(session.getSessionId(), id);
+                        controller.approvePendingRequest(session.getSessionId(), session.getUsername(), id);
                     } catch (NoSuchTransactionException | TransactionStatusException e) {
                         System.err.println(e.getMessage());
                     } catch (UnauthorizedOperationException e) {
@@ -234,7 +234,7 @@ public class ControllerUI {
 
                 for (UUID id : ids) {
                     try {
-                        controller.declinePendingRequest(session.getSessionId(), id);
+                        controller.declinePendingRequest(session.getSessionId(), session.getUsername(), id);
                     } catch (NoSuchTransactionException | TransactionStatusException e) {
                         System.err.println(e.getMessage());
                     } catch (UnauthorizedOperationException e) {
@@ -291,7 +291,7 @@ public class ControllerUI {
             }
 
             case 8 -> {
-                controller.signOut(session.getSessionId());
+                controller.signOut(session.getLogin(), session.getSessionId());
                 this.session = null;
                 mainMenuExitHolder.setValue(Boolean.TRUE);
             }

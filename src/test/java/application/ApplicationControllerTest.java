@@ -121,7 +121,7 @@ class ApplicationControllerTest {
         AuthenticationDto dto = controller.registerUser(playerCreationRequest);
         assertThat(authorizations.size()).isEqualTo(1);
 
-        controller.signOut(dto.getSessionId());
+        controller.signOut(playerDto.getUsername(), dto.getSessionId());
         assertThat(authorizations.isEmpty()).isTrue();
     }
 }

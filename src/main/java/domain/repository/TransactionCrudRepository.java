@@ -21,7 +21,7 @@ public interface TransactionCrudRepository {
 
     Collection<Transaction> getCreditingTransactions(String login);
 
-    Transaction approveTransaction(UUID id);
+    Transaction approveTransaction(String donorUsername, UUID id);
 
-    Transaction declineTransaction(UUID id);
+    Transaction declineTransaction(String donorUsername, UUID id);
 }

@@ -93,8 +93,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public MoneyTransferResponse approvePendingMoneyRequest(UUID requestId) {
-        Transaction transaction = transactionRepository.approveTransaction(requestId);
+    public MoneyTransferResponse approvePendingMoneyRequest(String donorUsername, UUID requestId) {
+        Transaction transaction = transactionRepository.approveTransaction(donorUsername, requestId);
 
         return transferMoneyBetweenAccounts(transaction,
                 new MoneyTransferRequest(
@@ -106,8 +106,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void declinePendingRequest(UUID requestId) {
-        transactionRepository.declineTransaction(requestId);
+    public void declinePendingRequest(String donorUsername, UUID requestId) {
+        transactionRepository.declineTransaction(donorUsername, requestId);
     }
 
     @Override

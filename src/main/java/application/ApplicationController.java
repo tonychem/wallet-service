@@ -96,19 +96,21 @@ public class ApplicationController {
         return history;
     }
 
-    public MoneyTransferResponse approvePendingRequest(UUID sessionId, UUID transactionId)
+    public MoneyTransferResponse approvePendingRequest(UUID sessionId,
+                                                       String donorUsername,
+                                                       UUID transactionId)
             throws UnauthorizedOperationException {
         if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
-        return playerService.approvePendingMoneyRequest(transactionId);
+        return playerService.approvePendingMoneyRequest(donorUsername, transactionId);
     }
 
-    public void declinePendingRequest(UUID sessionId, UUID transactionId)
+    public void declinePendingRequest(UUID sessionId, String donorUsername, UUID transactionId)
             throws UnauthorizedOperationException {
         if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
-        playerService.declinePendingRequest(transactionId);
+        playerService.declinePendingRequest(donorUsername, transactionId);
     }
 
-    public void signOut(UUID sessionId) {
+    public void signOut(String login, UUID sessionId) {
         authentications.remove(sessionId);
     }
 }

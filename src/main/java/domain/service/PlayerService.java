@@ -20,9 +20,9 @@ public interface PlayerService {
 
     Collection<MoneyTransferRequest> getPendingMoneyRequests(String login);
 
-    MoneyTransferResponse approvePendingMoneyRequest(UUID requestId);
+    MoneyTransferResponse approvePendingMoneyRequest(String donorUsername, UUID requestId);
 
-    void declinePendingRequest(UUID requestId);
+    void declinePendingRequest(String donorUsername, UUID requestId);
 
     Collection<TransactionDto> getHistory(String login, PlayerAction action);
 }

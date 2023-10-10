@@ -109,14 +109,16 @@ class InMemoryTransactionCrudeRepositoryImplTest {
     @Test
     void shouldDeclineTransaction() {
         Transaction transaction = inMemoryTransactionCrudeRepository.create(moneyTransferRequest);
-        inMemoryTransactionCrudeRepository.declineTransaction(transaction.getId());
+        inMemoryTransactionCrudeRepository.declineTransaction(moneyTransferRequest.getMoneyFrom(),
+                transaction.getId());
         assertThat(transaction.getStatus()).isEqualTo(TransferRequestStatus.DECLINED);
     }
 
     @Test
     void shouldApproveTransaction() {
         Transaction transaction = inMemoryTransactionCrudeRepository.create(moneyTransferRequest);
-        inMemoryTransactionCrudeRepository.approveTransaction(transaction.getId());
+        inMemoryTransactionCrudeRepository.approveTransaction(moneyTransferRequest.getMoneyFrom(),
+                transaction.getId());
         assertThat(transaction.getStatus()).isEqualTo(TransferRequestStatus.APPROVED);
     }
 }

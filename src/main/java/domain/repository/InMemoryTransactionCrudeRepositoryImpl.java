@@ -1,5 +1,6 @@
 package domain.repository;
 
+import application.exception.UnauthorizedOperationException;
 import domain.exception.NoSuchTransactionException;
 import domain.exception.TransactionAlreadyExistsException;
 import domain.exception.TransactionStatusException;
@@ -87,8 +88,11 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
     }
 
     @Override
-    public Transaction approveTransaction(UUID id) {
+    public Transaction approveTransaction(String donorUsername, UUID id) {
         Transaction transaction = getById(id);
+
+        if (!transaction.getSender().equals(donorUsername))
+            throw new TransactionStatusException("Вы не можете подтвердить чужую транзакцию!");
 
         if (!transaction.getStatus().equals(TransferRequestStatus.PENDING))
             throw new TransactionStatusException("Только транзакции в режиме подтверждения могут быть одобрены");
@@ -98,8 +102,11 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
     }
 
     @Override
-    public Transaction declineTransaction(UUID id) {
+    public Transaction declineTransaction(String donorUsername, UUID id) {
         Transaction transaction = getById(id);
+
+        if (!transaction.getSender().equals(donorUsername))
+            throw new TransactionStatusException("Вы не можете отклонить чужую транзакцию!");
 
         if (!transaction.getStatus().equals(TransferRequestStatus.PENDING))
             throw new TransactionStatusException("Только транзакции в режиме подтверждения могут быть отклонены");
