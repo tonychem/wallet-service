@@ -62,7 +62,7 @@ public class ControllerUI {
                 Wallet-service-app
                 1. Зарегистрировать нового пользователя
                 2. Авторизоваться
-                Любая клавиша. ВЫХОД.""";
+                3. ВЫХОД.""";
         System.out.println(landingMenu);
     }
 
@@ -76,6 +76,7 @@ public class ControllerUI {
                 value = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.println("Не цифра! Попробуйте еще");
+                scan.nextLine();
             }
         }
         return value;
