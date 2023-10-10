@@ -35,5 +35,5 @@ mvn package
 ```
 3. Находясь в этой же папке, запустить проект через командную строку:
 ```shell
-java -jar target/wallet-service-1.0-SNAPSHOT.jar
+java -jar target/wallet-service-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
