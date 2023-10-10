@@ -1,6 +1,5 @@
 package domain.repository;
 
-import application.exception.UnauthorizedOperationException;
 import domain.exception.NoSuchTransactionException;
 import domain.exception.TransactionAlreadyExistsException;
 import domain.exception.TransactionStatusException;
@@ -15,10 +14,17 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Реализация БД транзакций в оперативной памяти.
+ */
 public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRepository {
 
     private final Map<UUID, Transaction> transactions = new HashMap<>();
 
+    /**
+     * Создание транзакции
+     * @param request обертка над набором входных параметров при составлении запроса на получение денег
+     */
     @Override
     public Transaction create(MoneyTransferRequest request) {
         if (transactions.get(request.getId()) != null) throw new TransactionAlreadyExistsException(
@@ -47,11 +53,6 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         );
 
         return transaction;
-    }
-
-    @Override
-    public boolean exists(UUID id) {
-        return transactions.get(id) != null;
     }
 
     @Override

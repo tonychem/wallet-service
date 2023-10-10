@@ -1,5 +1,8 @@
 package application;
 
+import application.dto.AuthenticationDto;
+import application.dto.AuthenticationRequest;
+import application.dto.BalanceDto;
 import application.exception.UnauthorizedOperationException;
 import domain.exception.BadCredentialsException;
 import domain.model.dto.*;
@@ -13,6 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Класс-контроллер, ответственный за распределение запросов от UI к сервисам.
+ * В классе хранится множество авторизованных сессий. Обслуживание запросов пользователя невозможно без
+ * предоставления идентификатора сессии. Чтобы получить идентификатор сессии необходимо зарегистрировать
+ * нового пользователя или пройти авторизацию.
+ */
 public class ApplicationController {
 
     private final Set<UUID> authentications;

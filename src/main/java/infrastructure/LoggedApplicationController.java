@@ -1,9 +1,9 @@
 package infrastructure;
 
 import application.ApplicationController;
-import application.AuthenticationDto;
-import application.AuthenticationRequest;
-import application.BalanceDto;
+import application.dto.AuthenticationDto;
+import application.dto.AuthenticationRequest;
+import application.dto.BalanceDto;
 import application.exception.UnauthorizedOperationException;
 import domain.exception.BadCredentialsException;
 import domain.model.dto.MoneyTransferRequest;
@@ -17,6 +17,10 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Прокси класс для логирования действий пользователя. Фабрика ApplicationController
+ * предоставляет UI эту реализацию ApplicationController.
+ */
 @Slf4j
 public class LoggedApplicationController extends ApplicationController {
     @Override

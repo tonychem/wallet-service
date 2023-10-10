@@ -10,11 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Реализация БД игроков в оперативной памяти.
+ */
 public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
 
     private final Map<Long, Player> players = new HashMap<>();
     private long sequenceGenerator = 1;
 
+    /**
+     * Создание пользователя.
+     * @param playerCreationRequest обертка над входящими секретами - логин, ник, пароль. Логин и пароль должны быть уникальны.
+     */
     @Override
     public Player create(PlayerCreationRequest playerCreationRequest) {
         String newPlayerLogin = playerCreationRequest.getLogin();

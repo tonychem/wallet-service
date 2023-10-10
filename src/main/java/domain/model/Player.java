@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Основная модель игрока.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

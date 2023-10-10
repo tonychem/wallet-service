@@ -1,6 +1,10 @@
 package infrastructure;
 
-import application.*;
+import application.ApplicationController;
+import application.ApplicationControllerFactory;
+import application.dto.AuthenticationDto;
+import application.dto.AuthenticationRequest;
+import application.dto.BalanceDto;
 import application.exception.UnauthorizedOperationException;
 import domain.exception.BadCredentialsException;
 import domain.exception.NoSuchPlayerException;
@@ -16,6 +20,9 @@ import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.util.*;
 
+/**
+ * Класс ответственный за консольное взаимодействие с пользователем.
+ */
 public class ControllerUI {
     private final ApplicationController controller;
     private final MessageDigest messageDigest;
@@ -27,8 +34,10 @@ public class ControllerUI {
         this.controller = ApplicationControllerFactory.getInstance();
     }
 
+    //Главный метод, отвественный за пользовательский поток управления
     public void beginInteraction() {
         try (Scanner scan = new Scanner(System.in)) {
+            //Переменная-флаг, отслеживающая запрос на выход из приложения
             Holder<Boolean> applicationExitRequestHolder = Holder.of(Boolean.FALSE);
 
             while (!applicationExitRequestHolder.getValue()) {
@@ -38,6 +47,7 @@ public class ControllerUI {
 
                 printAuthenticatedUserMenu();
 
+                //Переменная-флаг, отслеживающая запрос на выход в меню авторизации
                 Holder<Boolean> mainMenuExitRequestHolder = Holder.of(Boolean.FALSE);
 
                 while (!mainMenuExitRequestHolder.getValue()) {

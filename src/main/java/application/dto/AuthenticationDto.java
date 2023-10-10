@@ -1,4 +1,4 @@
-package application;
+package application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

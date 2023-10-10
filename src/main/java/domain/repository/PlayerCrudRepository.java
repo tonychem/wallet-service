@@ -3,6 +3,9 @@ package domain.repository;
 import domain.model.Player;
 import domain.model.dto.PlayerCreationRequest;
 
+/**
+ * Базовый интерфейс взаимодействия с базой данных игроков и набором тривиальных методов.
+ */
 public interface PlayerCrudRepository {
     Player create(PlayerCreationRequest playerCreationRequest);
 

@@ -12,10 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class MainApplication {
-
-    static {
-
-    }
     public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchFieldException, IllegalAccessException {
         populateBd();
         new ControllerUI().beginInteraction();

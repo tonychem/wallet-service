@@ -1,7 +1,9 @@
 package application;
 
+import application.dto.AuthenticationDto;
+import application.dto.AuthenticationRequest;
+import application.dto.BalanceDto;
 import application.exception.UnauthorizedOperationException;
-import domain.exception.BadCredentialsException;
 import domain.model.dto.AuthenticatedPlayerDto;
 import domain.model.dto.PlayerCreationRequest;
 import domain.service.PlayerService;
