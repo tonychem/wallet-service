@@ -13,6 +13,7 @@ import domain.repository.PlayerCrudRepository;
 import domain.repository.TransactionCrudRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -26,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+@DisplayName("Player service test class")
 class PlayerServiceImplTest {
 
     private PlayerService playerService;
@@ -39,6 +41,7 @@ class PlayerServiceImplTest {
         playerService = new PlayerServiceImpl(mockPlayerCrudRepository, mockTransactionCrudRepository);
     }
 
+    @DisplayName("Authenticates player when credentials are correct")
     @SneakyThrows
     @Test
     void shouldAuthenticateWhenCredentialsAreCorrect() {
@@ -60,6 +63,7 @@ class PlayerServiceImplTest {
         verify(mockPlayerCrudRepository).getByLogin("admin");
     }
 
+    @DisplayName("Throw error when player offers bad credentials")
     @SneakyThrows
     @Test
     void shouldThrowExceptionWhenBadCredentials() {
@@ -80,6 +84,7 @@ class PlayerServiceImplTest {
         verify(mockPlayerCrudRepository).getByLogin("admin");
     }
 
+    @DisplayName("Should register new player when input data is correct")
     @SneakyThrows
     @Test
     void shouldRegisterNewPlayer() {
@@ -103,6 +108,7 @@ class PlayerServiceImplTest {
         verify(mockPlayerCrudRepository).create(any());
     }
 
+    @DisplayName("Should return correct balance when player exists")
     @Test
     void shouldReturnCorrectBalance() {
         Player admin = Player.builder()
@@ -121,6 +127,7 @@ class PlayerServiceImplTest {
         verify(mockPlayerCrudRepository).getById(any());
     }
 
+    @DisplayName("should transfer money when player has enough on their balance")
     @Test
     void shouldTransferMoneyWhenBalanceIsProficient() {
         UUID transactionId = UUID.randomUUID();
@@ -163,8 +170,9 @@ class PlayerServiceImplTest {
         verify(mockTransactionCrudRepository).create(any());
     }
 
+    @DisplayName("Should throw an error when transferring money from deficient account")
     @Test
-    void shouldTransferMoneyWhenBalanceIsDeficient() {
+    void shouldNotTransferMoneyWhenBalanceIsDeficient() {
         UUID transactionId = UUID.randomUUID();
         MoneyTransferRequest moneyTransferRequest = new MoneyTransferRequest(transactionId,
                 "admin", "user", BigDecimal.ONE);
@@ -201,6 +209,7 @@ class PlayerServiceImplTest {
         verify(mockTransactionCrudRepository).create(any());
     }
 
+    @DisplayName("Should get correct response on money request")
     @Test
     void shouldGetResponseWhenAskingMoneyFrom() {
         UUID transactionId = UUID.randomUUID();
@@ -238,19 +247,5 @@ class PlayerServiceImplTest {
 
         verify(mockPlayerCrudRepository, times(2)).getByLogin(any());
         verify(mockTransactionCrudRepository).create(any());
-    }
-
-    @Test
-    void getPendingMoneyRequests() {
-
-    }
-
-    @Test
-    void approvePendingMoneyRequest() {
-    }
-
-
-    @Test
-    void getHistory() {
     }
 }

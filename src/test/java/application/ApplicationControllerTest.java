@@ -26,12 +26,9 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("Application level test class")
 class ApplicationControllerTest {
-
     private PlayerService mockPlayerService;
     private HashSet<UUID> authorizations;
-
     private ApplicationController controller;
-
 
     @BeforeEach
     public void init() {
