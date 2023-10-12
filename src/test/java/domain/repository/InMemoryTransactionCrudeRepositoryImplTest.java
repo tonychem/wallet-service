@@ -5,8 +5,8 @@ import domain.exception.TransactionAlreadyExistsException;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
 import domain.model.dto.MoneyTransferRequest;
-import domain.model.dto.MoneyTransferResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -15,8 +15,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("In-memory transaction repository test class")
 class InMemoryTransactionCrudeRepositoryImplTest {
 
     private InMemoryTransactionCrudeRepositoryImpl inMemoryTransactionCrudeRepository;
@@ -33,6 +33,7 @@ class InMemoryTransactionCrudeRepositoryImplTest {
         );
     }
 
+    @DisplayName("Transaction creation when transaction data is correct")
     @Test
     void shouldCreateTransaction() {
         Transaction transaction = inMemoryTransactionCrudeRepository.create(moneyTransferRequest);
@@ -42,6 +43,7 @@ class InMemoryTransactionCrudeRepositoryImplTest {
         assertThat(transaction.getStatus()).isEqualTo(TransferRequestStatus.PENDING);
     }
 
+    @DisplayName("Creating transaction with already existing id throws error")
     @Test
     void shouldFailWhenSameTransactionId() {
         Transaction transaction = inMemoryTransactionCrudeRepository.create(moneyTransferRequest);
@@ -51,6 +53,7 @@ class InMemoryTransactionCrudeRepositoryImplTest {
         )).isInstanceOf(TransactionAlreadyExistsException.class);
     }
 
+    @DisplayName("Fetching transaction by id when id is correct")
     @Test
     void shouldGetTransactionById() {
         inMemoryTransactionCrudeRepository.create(moneyTransferRequest);
@@ -60,12 +63,14 @@ class InMemoryTransactionCrudeRepositoryImplTest {
         assertThat(transactionFromDb.getRecipient()).isEqualTo(moneyTransferRequest.getMoneyTo());
     }
 
+    @DisplayName("Fetching absent transaction throws error")
     @Test
     void shouldThrowExceptionWhenIdDoesnotExist() {
         assertThatThrownBy(() -> inMemoryTransactionCrudeRepository.getById(moneyTransferRequest.getId()))
                 .isInstanceOf(NoSuchTransactionException.class);
     }
 
+    @DisplayName("Fetching transactions by sender, by recipient and current status")
     @Test
     void shouldReturnListOfAppropriateTransactions() {
         MoneyTransferRequest requestFromAdminToUser1 = new MoneyTransferRequest(
@@ -106,6 +111,7 @@ class InMemoryTransactionCrudeRepositoryImplTest {
         assertThat(adminCrediting.size()).isEqualTo(1);
     }
 
+    @DisplayName("Declining existing transaction")
     @Test
     void shouldDeclineTransaction() {
         Transaction transaction = inMemoryTransactionCrudeRepository.create(moneyTransferRequest);
@@ -114,6 +120,7 @@ class InMemoryTransactionCrudeRepositoryImplTest {
         assertThat(transaction.getStatus()).isEqualTo(TransferRequestStatus.DECLINED);
     }
 
+    @DisplayName("Approving existing transaction")
     @Test
     void shouldApproveTransaction() {
         Transaction transaction = inMemoryTransactionCrudeRepository.create(moneyTransferRequest);

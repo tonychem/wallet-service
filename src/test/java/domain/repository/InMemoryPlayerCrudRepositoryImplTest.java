@@ -5,11 +5,13 @@ import domain.exception.PlayerAlreadyExistsException;
 import domain.model.Player;
 import domain.model.dto.PlayerCreationRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("In-memory player repository test class")
 class InMemoryPlayerCrudRepositoryImplTest {
 
     private InMemoryPlayerCrudRepositoryImpl inMemoryPlayerCrudRepository;
@@ -21,6 +23,7 @@ class InMemoryPlayerCrudRepositoryImplTest {
         adminPlayer = new PlayerCreationRequest("login", "password".getBytes(), "username");
     }
 
+    @DisplayName("Player creation when input data is correct")
     @Test
     void shouldCreateUser() {
         Player player = inMemoryPlayerCrudRepository.create(adminPlayer);
@@ -29,6 +32,7 @@ class InMemoryPlayerCrudRepositoryImplTest {
         assertThat(player.getBalance()).isEqualTo("0");
     }
 
+    @DisplayName("Fetching absent player throws error")
     @Test
     void shouldThrowErrorWhenUserIsAbsent() {
         assertThatThrownBy(() -> inMemoryPlayerCrudRepository.getById(0L))
@@ -39,6 +43,7 @@ class InMemoryPlayerCrudRepositoryImplTest {
                 .isInstanceOf(NoSuchPlayerException.class);
     }
 
+    @DisplayName("Fetching present user returns its data")
     @Test
     void shouldFindByUsername() {
         Player player = inMemoryPlayerCrudRepository.create(adminPlayer);
@@ -50,6 +55,7 @@ class InMemoryPlayerCrudRepositoryImplTest {
         assertThat(player.getLogin()).isEqualTo(playerFromDbByLogin.getLogin());
     }
 
+    @DisplayName("Creating player with already existing username or login throws error")
     @Test
     void shouldThrowExceptionWhenDbAlreadyHasThisUsername() {
         inMemoryPlayerCrudRepository.create(adminPlayer);

@@ -9,6 +9,7 @@ import domain.model.dto.PlayerCreationRequest;
 import domain.service.PlayerService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@DisplayName("Application level test class")
 class ApplicationControllerTest {
 
     private PlayerService mockPlayerService;
@@ -38,6 +40,7 @@ class ApplicationControllerTest {
         controller = new ApplicationController(authorizations, mockPlayerService);
     }
 
+    @DisplayName("Should return player data when registering new player")
     @SneakyThrows
     @Test
     void shouldRegisterUser() {
@@ -60,6 +63,7 @@ class ApplicationControllerTest {
         verify(mockPlayerService).register(any());
     }
 
+    @DisplayName("Should return player data when authenticating a player")
     @SneakyThrows
     @Test
     void shouldAuthenticateUser() {
@@ -80,6 +84,7 @@ class ApplicationControllerTest {
         verify(mockPlayerService).authenticate(any(), any());
     }
 
+    @DisplayName("Return balance data when player is authenticated")
     @SneakyThrows
     @Test
     void shouldGetBalanceWhenSessionIdIsPresent() {
@@ -96,6 +101,7 @@ class ApplicationControllerTest {
         verify(mockPlayerService).getBalance(any());
     }
 
+    @DisplayName("Throws exception when balance is requested without authentication")
     @SneakyThrows
     @Test
     void shouldThrowExceptionWhenSessionIdIsAbsent() {
@@ -109,6 +115,7 @@ class ApplicationControllerTest {
                 .isInstanceOf(UnauthorizedOperationException.class);
     }
 
+    @DisplayName("Should remove authorization when player is signed out")
     @SneakyThrows
     @Test
     void shouldSignOut() {
