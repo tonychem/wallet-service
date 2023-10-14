@@ -3,7 +3,7 @@ package domain.repository;
 import domain.exception.NoSuchPlayerException;
 import domain.exception.PlayerAlreadyExistsException;
 import domain.model.Player;
-import domain.model.dto.PlayerCreationRequest;
+import domain.repository.inmemoryimpl.InMemoryPlayerCrudRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,12 +15,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InMemoryPlayerCrudRepositoryImplTest {
 
     private InMemoryPlayerCrudRepositoryImpl inMemoryPlayerCrudRepository;
-    private PlayerCreationRequest adminPlayer;
+    private Player adminPlayer;
 
     @BeforeEach
     public void init() {
         inMemoryPlayerCrudRepository = new InMemoryPlayerCrudRepositoryImpl();
-        adminPlayer = new PlayerCreationRequest("login", "password".getBytes(), "username");
+        adminPlayer = Player.builder()
+                .login("login")
+                .password("password".getBytes())
+                .username("username")
+                .build();
     }
 
     @DisplayName("Player creation when input data is correct")
@@ -60,14 +64,21 @@ class InMemoryPlayerCrudRepositoryImplTest {
     void shouldThrowExceptionWhenDbAlreadyHasThisUsername() {
         inMemoryPlayerCrudRepository.create(adminPlayer);
 
-        PlayerCreationRequest playerCreationRequestSameLogin = new PlayerCreationRequest(adminPlayer.getLogin(),
-                "pwd".getBytes(), "newUsername");
-        PlayerCreationRequest playerCreationRequestSameUsername = new PlayerCreationRequest("someLogin",
-                "pwd".getBytes(), adminPlayer.getUsername());
+        Player playerSameLogin = Player.builder()
+                .login(adminPlayer.getLogin())
+                .password("pwd".getBytes())
+                .username("newUsername")
+                .build();
 
-        assertThatThrownBy(() -> inMemoryPlayerCrudRepository.create(playerCreationRequestSameLogin))
+        Player playerSameUsername = Player.builder()
+                .login("someLogin")
+                .password("pwd".getBytes())
+                .username(adminPlayer.getUsername())
+                .build();
+
+        assertThatThrownBy(() -> inMemoryPlayerCrudRepository.create(playerSameLogin))
                 .isInstanceOf(PlayerAlreadyExistsException.class);
-        assertThatThrownBy(() -> inMemoryPlayerCrudRepository.create(playerCreationRequestSameUsername))
+        assertThatThrownBy(() -> inMemoryPlayerCrudRepository.create(playerSameUsername))
                 .isInstanceOf(PlayerAlreadyExistsException.class);
     }
 

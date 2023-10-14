@@ -5,6 +5,7 @@ import domain.exception.TransactionAlreadyExistsException;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
 import domain.model.dto.MoneyTransferRequest;
+import domain.repository.inmemoryimpl.InMemoryTransactionCrudeRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package domain.repository;
+package domain.repository.inmemoryimpl;
 
 import domain.exception.NoSuchTransactionException;
 import domain.exception.TransactionAlreadyExistsException;
@@ -6,6 +6,7 @@ import domain.exception.TransactionStatusException;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
 import domain.model.dto.MoneyTransferRequest;
+import domain.repository.TransactionCrudRepository;
 
 import java.util.Collection;
 import java.util.HashMap;

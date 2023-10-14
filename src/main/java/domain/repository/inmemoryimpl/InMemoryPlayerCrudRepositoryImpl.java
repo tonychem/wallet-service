@@ -1,9 +1,9 @@
-package domain.repository;
+package domain.repository.inmemoryimpl;
 
 import domain.exception.NoSuchPlayerException;
 import domain.exception.PlayerAlreadyExistsException;
 import domain.model.Player;
-import domain.model.dto.PlayerCreationRequest;
+import domain.repository.PlayerCrudRepository;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -20,37 +20,28 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
 
     /**
      * Создание пользователя.
-     * @param playerCreationRequest обертка над входящими секретами - логин, ник, пароль. Логин и пароль должны быть уникальны.
+     * @param newPlayer новый игрок, содержащий поля username, login, password.
      */
     @Override
-    public Player create(PlayerCreationRequest playerCreationRequest) {
-        String newPlayerLogin = playerCreationRequest.getLogin();
-        String newPlayerUsername = playerCreationRequest.getUsername();
-
+    public Player create(Player newPlayer) {
         boolean loginAlreadyExists = players.values().stream()
-                .anyMatch(player -> player.getLogin().equals(newPlayerLogin));
+                .anyMatch(player -> player.getLogin().equals(newPlayer.getLogin()));
 
         boolean usernameAlreadyExists = players.values().stream()
-                .anyMatch(player -> player.getUsername().equals(newPlayerUsername));
+                .anyMatch(player -> player.getUsername().equals(newPlayer.getUsername()));
 
         if (loginAlreadyExists) throw new PlayerAlreadyExistsException(
-                String.format("Пользователь с таким логином login=%s уже существует", newPlayerLogin)
+                String.format("Пользователь с таким логином login=%s уже существует", newPlayer.getLogin())
         );
 
         if (usernameAlreadyExists) throw new PlayerAlreadyExistsException(
-                String.format("Пользователь с таким именем username=%s уже существует", newPlayerUsername)
+                String.format("Пользователь с таким именем username=%s уже существует", newPlayer.getUsername())
         );
 
-        Player newPlayer = Player.builder()
-                .id(sequenceGenerator)
-                .username(newPlayerUsername)
-                .login(newPlayerLogin)
-                .password(playerCreationRequest.getPassword())
-                .balance(BigDecimal.ZERO)
-                .build();
+        newPlayer.setId(sequenceGenerator);
+        newPlayer.setBalance(BigDecimal.ZERO);
 
         players.put(sequenceGenerator, newPlayer);
-
         sequenceGenerator++;
 
         return newPlayer;
@@ -80,7 +71,7 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
 
         return playerOp.orElseThrow(
                 () -> new NoSuchPlayerException(
-                        String.format("Пользователь с логином login=%s не существует", username)
+                        String.format("Пользователь с именем пользователя username=%s не существует", username)
                 )
         );
     }

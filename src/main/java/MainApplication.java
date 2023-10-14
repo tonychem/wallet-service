@@ -1,10 +1,12 @@
 import application.ApplicationController;
 import application.ApplicationControllerFactory;
 import domain.model.Player;
-import domain.repository.InMemoryPlayerCrudRepositoryImpl;
+import domain.repository.inmemoryimpl.InMemoryPlayerCrudRepositoryImpl;
 import domain.service.PlayerServiceImpl;
 import infrastructure.ControllerUI;
+import util.ConfigFileReader;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -12,8 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class MainApplication {
-    public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchFieldException, IllegalAccessException {
-        populateBd();
+    public static void main(String[] args) throws NoSuchAlgorithmException,
+            NoSuchFieldException, IllegalAccessException, IOException {
+//        populateBd();
+        ConfigFileReader.read("application.properties");
         new ControllerUI().beginInteraction();
     }
 

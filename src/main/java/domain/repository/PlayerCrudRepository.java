@@ -7,7 +7,7 @@ import domain.model.dto.PlayerCreationRequest;
  * Базовый интерфейс взаимодействия с базой данных игроков и набором тривиальных методов.
  */
 public interface PlayerCrudRepository {
-    Player create(PlayerCreationRequest playerCreationRequest);
+    Player create(Player player);
 
     void delete(Long id);
 

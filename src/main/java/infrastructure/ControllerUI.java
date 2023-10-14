@@ -15,6 +15,7 @@ import domain.model.dto.PlayerCreationRequest;
 import domain.model.dto.TransactionDto;
 import domain.service.PlayerAction;
 import lombok.SneakyThrows;
+import util.Holder;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -44,6 +45,12 @@ public class ControllerUI {
             7. Посмотреть Вашу историю на аккаунте
             8. Выйти из аккаунта""";
 
+    private static final String HISTORY_MENU = """
+            Введите:
+            debit - получить историю по списаниям
+            credit - получить историю по зачислениям
+            ЛЮБОЙ СИМВОЛ - по всем операциям""";
+
     @SneakyThrows
     public ControllerUI() {
         this.messageDigest = MessageDigest.getInstance("MD5");
@@ -65,7 +72,7 @@ public class ControllerUI {
                 }
 
                 assert session != null;
-
+ 
                 printAuthenticatedUserMenu();
 
                 Holder<Boolean> mainMenuExitSignalHolder = Holder.of(Boolean.FALSE);
@@ -101,7 +108,7 @@ public class ControllerUI {
                 System.out.println("Успешно авторизован пользователь: "
                         + authenticationDto.getUsername());
             }
-            case 3 -> exitRequest = new Holder<>(Boolean.TRUE);
+            case 3 -> exitRequest.setValue(Boolean.TRUE);
         }
     }
 
@@ -152,19 +159,13 @@ public class ControllerUI {
         String username;
 
         System.out.print("Введите логин: ");
-        do {
-            login = scanner.nextLine();
-        } while (login == null || login.isEmpty());
+        login = readInputString(scanner);
 
         System.out.print("Введите пароль: ");
-        do {
-            password = scanner.nextLine();
-        } while (password == null || password.isEmpty());
+        password = readInputString(scanner);
 
         System.out.print("Введите имя пользователя: ");
-        do {
-            username = scanner.nextLine();
-        } while (username == null || username.isEmpty());
+        username = readInputString(scanner);
 
         byte[] passEncoded = messageDigest.digest(password.getBytes());
         return new PlayerCreationRequest(login, passEncoded, username);
@@ -212,15 +213,10 @@ public class ControllerUI {
         String password;
 
         System.out.print("Введите логин: ");
-        do {
-            login = scanner.nextLine();
-        } while (login == null || login.isEmpty());
+        login = readInputString(scanner);
 
         System.out.print("Введите пароль: ");
-
-        do {
-            password = scanner.nextLine();
-        } while (password == null || password.isEmpty());
+        password = readInputString(scanner);
 
         byte[] passEncoded = messageDigest.digest(password.getBytes());
         return new AuthenticationRequest(login, passEncoded);
@@ -320,18 +316,7 @@ public class ControllerUI {
 
     private void moneyRequestApprovalHandler(Scanner scan) {
         System.out.println("Введите id транзаций для подтверждения через запятую: ");
-        String[] transactionStringView = scan.nextLine().split(",");
-        List<UUID> ids = new ArrayList<>();
-
-        for (String transaction : transactionStringView) {
-            try {
-                UUID id = UUID.fromString(transaction);
-                ids.add(id);
-            } catch (Exception e) {
-                System.err.println("Ошибка парсинга id транзакции");
-            }
-        }
-
+        List<UUID> ids = readUUIDsFromInput(scan);
         for (UUID id : ids) {
             try {
                 controller.approvePendingRequest(session.getSessionId(), session.getUsername(), id);
@@ -345,17 +330,8 @@ public class ControllerUI {
 
     private void declinePendingRequestsHandler(Scanner scan) {
         System.out.println("Введите id транзаций для отмены через запятую: ");
-        String[] transactionStringView = scan.nextLine().split(",");
-        List<UUID> ids = new ArrayList<>();
 
-        for (String transaction : transactionStringView) {
-            try {
-                UUID id = UUID.fromString(transaction);
-                ids.add(id);
-            } catch (Exception e) {
-                System.err.println("Ошибка парсинга id транзакции");
-            }
-        }
+        List<UUID> ids = readUUIDsFromInput(scan);
 
         for (UUID id : ids) {
             try {
@@ -370,13 +346,7 @@ public class ControllerUI {
 
     private void historyPrinter(Scanner scan) {
         try {
-            String options = """
-                    Введите:
-                    debit - получить историю по списаниям
-                    credit - получить историю по зачислениям
-                    ЛЮБОЙ СИМВОЛ - по всем операциям""";
-
-            System.out.println(options);
+            printHistoryMenu();
 
             String userChoice = scan.nextLine().toLowerCase();
 
@@ -419,5 +389,35 @@ public class ControllerUI {
         controller.signOut(session.getLogin(), session.getSessionId());
         this.session = null;
         mainMenuExitHolder.setValue(Boolean.TRUE);
+    }
+
+    private String readInputString(Scanner scanner) {
+        String input;
+
+        do {
+            input = scanner.nextLine();
+        } while (input == null || input.isEmpty());
+
+        return input;
+    }
+
+    private List<UUID> readUUIDsFromInput(Scanner scan) {
+        String[] transactionStringView = scan.nextLine().split(",");
+        List<UUID> ids = new ArrayList<>();
+
+        for (String transaction : transactionStringView) {
+            try {
+                UUID id = UUID.fromString(transaction);
+                ids.add(id);
+            } catch (Exception e) {
+                System.err.println("Ошибка парсинга id транзакции");
+            }
+        }
+
+        return ids;
+    }
+
+    private void printHistoryMenu() {
+        System.out.println(HISTORY_MENU);
     }
 }

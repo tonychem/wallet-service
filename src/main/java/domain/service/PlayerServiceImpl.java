@@ -7,10 +7,11 @@ import domain.model.Player;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
 import domain.model.dto.*;
-import domain.repository.InMemoryPlayerCrudRepositoryImpl;
-import domain.repository.InMemoryTransactionCrudeRepositoryImpl;
+import domain.repository.inmemoryimpl.InMemoryPlayerCrudRepositoryImpl;
+import domain.repository.inmemoryimpl.InMemoryTransactionCrudeRepositoryImpl;
 import domain.repository.PlayerCrudRepository;
 import domain.repository.TransactionCrudRepository;
+import domain.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -23,7 +24,8 @@ public class PlayerServiceImpl implements PlayerService {
     private final TransactionCrudRepository transactionRepository;
 
     public PlayerServiceImpl() {
-        this.playerRepository = new InMemoryPlayerCrudRepositoryImpl();
+//        this.playerRepository = new InMemoryPlayerCrudRepositoryImpl();
+        this.playerRepository = new PGJDBCPlayerCrudRepositoryImpl();
         this.transactionRepository = new InMemoryTransactionCrudeRepositoryImpl();
     }
 
@@ -45,7 +47,14 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public AuthenticatedPlayerDto register(PlayerCreationRequest playerCreationRequest) throws BadCredentialsException {
         try {
-            Player player = playerRepository.create(playerCreationRequest);
+            Player newPlayer = Player.builder()
+                    .username(playerCreationRequest.getUsername())
+                    .login(playerCreationRequest.getLogin())
+                    .password(playerCreationRequest.getPassword())
+                    .build();
+
+            Player player = playerRepository.create(newPlayer);
+
             return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
                     player.getBalance());
         } catch (PlayerAlreadyExistsException e) {

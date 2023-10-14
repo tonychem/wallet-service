@@ -1,6 +1,5 @@
-package infrastructure;
+package application;
 
-import application.ApplicationController;
 import application.dto.AuthenticationDto;
 import application.dto.AuthenticationRequest;
 import application.dto.BalanceDto;

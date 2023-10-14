@@ -1,7 +1,5 @@
 package application;
 
-import infrastructure.LoggedApplicationController;
-
 public class ApplicationControllerFactory {
     private static ApplicationController applicationController;
 

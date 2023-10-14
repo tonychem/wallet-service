@@ -88,16 +88,23 @@ class PlayerServiceImplTest {
     @SneakyThrows
     @Test
     void shouldRegisterNewPlayer() {
-        PlayerCreationRequest request = new PlayerCreationRequest("admin", "password".getBytes(),
-                "admin");
+        Player newPlayer = Player.builder()
+                .login("admin")
+                .password("password".getBytes())
+                .username("admin")
+                .build();
+
         Player admin = Player.builder()
-                .username(request.getUsername())
-                .login(request.getLogin())
-                .password(request.getPassword())
+                .username(newPlayer.getUsername())
+                .login(newPlayer.getLogin())
+                .password(newPlayer.getPassword())
                 .balance(BigDecimal.ZERO)
                 .build();
 
-        when(mockPlayerCrudRepository.create(request))
+        PlayerCreationRequest request = new PlayerCreationRequest(newPlayer.getLogin(), newPlayer.getPassword(),
+                newPlayer.getUsername());
+
+        when(mockPlayerCrudRepository.create(newPlayer))
                 .thenReturn(admin);
 
         AuthenticatedPlayerDto dto = playerService.register(request);
