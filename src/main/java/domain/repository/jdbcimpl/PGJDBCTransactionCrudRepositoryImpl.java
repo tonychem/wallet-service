@@ -19,7 +19,6 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
     private final String URL;
     private final String username;
     private final String password;
-
     private final String schema;
 
     public PGJDBCTransactionCrudRepositoryImpl() {
@@ -27,6 +26,13 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         this.username = System.getProperty("jdbc.username");
         this.password = System.getProperty("jdbc.password");
         this.URL = System.getProperty("jdbc.url") + "?currentSchema=" + this.schema;
+    }
+
+    public PGJDBCTransactionCrudRepositoryImpl(String URL, String username, String password, String schema) {
+        this.URL = URL;
+        this.username = username;
+        this.password = password;
+        this.schema = schema;
     }
 
     @Override
@@ -239,11 +245,11 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
             uuid.setType("uuid");
             uuid.setValue(id.toString());
 
-            updateStatement.setString(1, TransferRequestStatus.DECLINED.name());
+            updateStatement.setString(1, TransferRequestStatus.FAILED.name());
             updateStatement.setObject(2, uuid);
             updateStatement.executeUpdate();
 
-            transaction.setStatus(TransferRequestStatus.DECLINED);
+            transaction.setStatus(TransferRequestStatus.FAILED);
             return transaction;
         } catch (SQLException e) {
             throw new RuntimeException(e);

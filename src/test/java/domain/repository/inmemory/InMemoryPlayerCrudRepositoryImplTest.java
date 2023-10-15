@@ -1,4 +1,4 @@
-package domain.repository;
+package domain.repository.inmemory;
 
 import domain.exception.NoSuchPlayerException;
 import domain.exception.PlayerAlreadyExistsException;

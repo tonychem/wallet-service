@@ -23,6 +23,13 @@ public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
         this.URL = System.getProperty("jdbc.url") + "?currentSchema=" + this.schema;
     }
 
+    public PGJDBCPlayerCrudRepositoryImpl(String URL, String username, String password, String schema) {
+        this.URL = URL;
+        this.username = username;
+        this.password = password;
+        this.schema = schema;
+    }
+
     @Override
     public Player create(Player player) {
         String nextValQuery = "SELECT nextval('player_id_sequence')";
