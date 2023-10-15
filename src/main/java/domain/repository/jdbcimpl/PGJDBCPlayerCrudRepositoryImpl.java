@@ -95,9 +95,8 @@ public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
             searchStatement.setLong(1, id);
             ResultSet resultSet = searchStatement.executeQuery();
 
-            Player player = null;
             if (resultSet.next()) {
-                player = Player.builder()
+                Player player = Player.builder()
                         .id(resultSet.getLong("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getBytes("password"))
@@ -124,9 +123,8 @@ public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
             searchStatement.setString(1, login);
             ResultSet resultSet = searchStatement.executeQuery();
 
-            Player player = null;
             if (resultSet.next()) {
-                player = Player.builder()
+                Player player = Player.builder()
                         .id(resultSet.getLong("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getBytes("password"))
@@ -153,9 +151,8 @@ public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
             searchStatement.setString(1, playerName);
             ResultSet resultSet = searchStatement.executeQuery();
 
-            Player player = null;
             if (resultSet.next()) {
-                player = Player.builder()
+                Player player = Player.builder()
                         .id(resultSet.getLong("id"))
                         .login(resultSet.getString("login"))
                         .password(resultSet.getBytes("password"))

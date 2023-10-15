@@ -140,14 +140,12 @@ public class ControllerUI {
     private int readInputKey(Scanner scan) {
         int value = -1;
 
-        String input = scan.nextLine();
-
         while (value == -1) {
             try {
+                String input = scan.nextLine();
                 value = Integer.parseInt(input);
             } catch (NumberFormatException e) {
                 System.out.println("Не цифра! Попробуйте еще");
-                scan.nextLine();
             }
         }
         return value;
@@ -374,9 +372,9 @@ public class ControllerUI {
 
             history.stream()
                     .forEach(transaction ->
-                            System.out.printf("id = %s, отправитель %s, получатель %s, сумма %.2f%n",
-                                    transaction.getId(), transaction.getSender(), transaction.getRecipient(),
-                                    transaction.getAmount().doubleValue()));
+                            System.out.printf("id = %s, статус %s, отправитель %s, получатель %s, сумма %.2f%n",
+                                    transaction.getId(), transaction.getStatus(), transaction.getSender(),
+                                    transaction.getRecipient(), transaction.getAmount().doubleValue()));
 
         } catch (NoSuchPlayerException nsp) {
             System.err.println(nsp.getMessage());

@@ -49,4 +49,11 @@ public interface TransactionCrudRepository {
      * @param id идентификатор транзакции
      */
     Transaction declineTransaction(String donorUsername, UUID id);
+
+    /**
+     * Установить статус транзакции в состояние FAILED
+     * @param id идентификатор транзакции
+     * @return
+     */
+    Transaction setFailed(UUID id);
 }

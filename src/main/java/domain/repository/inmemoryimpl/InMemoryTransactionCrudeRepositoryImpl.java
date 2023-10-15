@@ -116,4 +116,11 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         transaction.setStatus(TransferRequestStatus.DECLINED);
         return transaction;
     }
+
+    @Override
+    public Transaction setFailed(UUID id) {
+        Transaction transaction = getById(id);
+        transaction.setStatus(TransferRequestStatus.FAILED);
+        return transaction;
+    }
 }

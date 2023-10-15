@@ -12,6 +12,7 @@ import domain.repository.inmemoryimpl.InMemoryTransactionCrudeRepositoryImpl;
 import domain.repository.PlayerCrudRepository;
 import domain.repository.TransactionCrudRepository;
 import domain.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
+import domain.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -24,9 +25,8 @@ public class PlayerServiceImpl implements PlayerService {
     private final TransactionCrudRepository transactionRepository;
 
     public PlayerServiceImpl() {
-//        this.playerRepository = new InMemoryPlayerCrudRepositoryImpl();
         this.playerRepository = new PGJDBCPlayerCrudRepositoryImpl();
-        this.transactionRepository = new InMemoryTransactionCrudeRepositoryImpl();
+        this.transactionRepository = new PGJDBCTransactionCrudRepositoryImpl();
     }
 
     public PlayerServiceImpl(PlayerCrudRepository playerRepository, TransactionCrudRepository transactionRepository) {
@@ -71,15 +71,16 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public MoneyTransferResponse transferMoneyTo(MoneyTransferRequest moneyTransferRequest) {
+        Player receiver = playerRepository.getByLogin(moneyTransferRequest.getMoneyTo());
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
         return transferMoneyBetweenAccounts(transaction, moneyTransferRequest);
     }
 
     @Override
     public MoneyTransferResponse requestMoneyFrom(MoneyTransferRequest moneyTransferRequest) {
-        Transaction transaction = transactionRepository.create(moneyTransferRequest);
         Player requester = playerRepository.getByLogin(moneyTransferRequest.getMoneyTo());
         Player donor = playerRepository.getByLogin(moneyTransferRequest.getMoneyFrom());
+        Transaction transaction = transactionRepository.create(moneyTransferRequest);
 
         return new MoneyTransferResponse(
                 new AuthenticatedPlayerDto(requester.getId(), requester.getLogin(),
@@ -147,6 +148,7 @@ public class PlayerServiceImpl implements PlayerService {
         BigDecimal balanceAfterMoneyWithdrawal = sender.getBalance().subtract(moneyTransferRequest.getAmount());
 
         if (balanceAfterMoneyWithdrawal.signum() < 0) {
+            transactionRepository.setFailed(transaction.getId());
             transaction.setStatus(TransferRequestStatus.FAILED);
             throw new DeficientBalanceException(
                     String.format("Не хватает деньги на балансе игрока с id=%d", sender.getId())
@@ -155,13 +157,17 @@ public class PlayerServiceImpl implements PlayerService {
 
         sender.setBalance(balanceAfterMoneyWithdrawal);
         recipient.setBalance(recipient.getBalance().add(moneyTransferRequest.getAmount()));
+
+        Transaction approvedTransaction =
+                transactionRepository.approveTransaction(sender.getLogin(), transaction.getId());
         transaction.setStatus(TransferRequestStatus.APPROVED);
 
         return new MoneyTransferResponse(
                 new AuthenticatedPlayerDto(sender.getId(), sender.getLogin(), sender.getUsername(),
                         sender.getBalance()),
-                new TransactionDto(transaction.getId(), transaction.getStatus(),
-                        transaction.getSender(), transaction.getRecipient(), transaction.getAmount())
+                new TransactionDto(approvedTransaction.getId(), approvedTransaction.getStatus(),
+                        approvedTransaction.getSender(), approvedTransaction.getRecipient(),
+                        approvedTransaction.getAmount())
         );
     }
 }

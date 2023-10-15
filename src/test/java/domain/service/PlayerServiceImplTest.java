@@ -164,6 +164,11 @@ class PlayerServiceImplTest {
                 .thenReturn(admin);
         when(mockPlayerCrudRepository.getByLogin("user"))
                 .thenReturn(user);
+        when(mockTransactionCrudRepository.approveTransaction(admin.getLogin(), transactionId))
+                .thenAnswer((invocation) -> {
+                    transaction.setStatus(TransferRequestStatus.APPROVED);
+                    return transaction;
+                });
         when(mockTransactionCrudRepository.create(moneyTransferRequest))
                 .thenReturn(transaction);
 
@@ -173,7 +178,7 @@ class PlayerServiceImplTest {
                 .isEqualTo(balanceAfterWithdrawal);
         assertThat(transaction.getStatus()).isEqualTo(TransferRequestStatus.APPROVED);
 
-        verify(mockPlayerCrudRepository, times(2)).getByLogin(any());
+        verify(mockPlayerCrudRepository, times(3)).getByLogin(any());
         verify(mockTransactionCrudRepository).create(any());
     }
 
@@ -212,7 +217,7 @@ class PlayerServiceImplTest {
                 .isInstanceOf(DeficientBalanceException.class);
         assertThat(transaction.getStatus()).isEqualTo(TransferRequestStatus.FAILED);
 
-        verify(mockPlayerCrudRepository, times(2)).getByLogin(any());
+        verify(mockPlayerCrudRepository, times(3)).getByLogin(any());
         verify(mockTransactionCrudRepository).create(any());
     }
 

@@ -1,46 +1,263 @@
 package domain.repository.jdbcimpl;
 
+import domain.exception.NoSuchTransactionException;
+import domain.exception.TransactionAlreadyExistsException;
+import domain.exception.TransactionStatusException;
 import domain.model.Transaction;
 import domain.model.TransferRequestStatus;
 import domain.model.dto.MoneyTransferRequest;
 import domain.repository.TransactionCrudRepository;
+import org.postgresql.util.PGobject;
 
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepository {
+    private final String URL;
+    private final String username;
+    private final String password;
+
+    private final String schema;
+
+    public PGJDBCTransactionCrudRepositoryImpl() {
+        this.schema = System.getProperty("jdbc.domain.schema");
+        this.username = System.getProperty("jdbc.username");
+        this.password = System.getProperty("jdbc.password");
+        this.URL = System.getProperty("jdbc.url") + "?currentSchema=" + this.schema;
+    }
+
     @Override
     public Transaction create(MoneyTransferRequest request) {
-        return null;
+        String checkTransactionExistsQuery = "SELECT * FROM transactions WHERE id = ?";
+        String creationQuery = "INSERT INTO transactions (id, status, sender, recipient, amount) VALUES (?,?,?,?,?)";
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement checkExistenceStatement = connection.prepareStatement(checkTransactionExistsQuery);
+             PreparedStatement creationStatement = connection.prepareStatement(creationQuery)) {
+            PGobject uuid = new PGobject();
+            uuid.setType("uuid");
+            uuid.setValue(request.getId().toString());
+
+            checkExistenceStatement.setObject(1, uuid);
+            boolean transactionAlreadyExists = checkExistenceStatement.executeQuery().next();
+
+            if (transactionAlreadyExists) throw new TransactionAlreadyExistsException(
+                    String.format("Транзакция с id=%s уже существует", request.getId())
+            );
+
+            Transaction transaction = Transaction.builder()
+                    .id(request.getId())
+                    .status(TransferRequestStatus.PENDING)
+                    .sender(request.getMoneyFrom())
+                    .recipient(request.getMoneyTo())
+                    .amount(request.getAmount())
+                    .build();
+
+            creationStatement.setObject(1, uuid);
+            creationStatement.setString(2, transaction.getStatus().name());
+            creationStatement.setString(3, transaction.getSender());
+            creationStatement.setString(4, transaction.getRecipient());
+            creationStatement.setBigDecimal(5, transaction.getAmount());
+            creationStatement.executeUpdate();
+
+            return transaction;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Transaction getById(UUID id) {
-        return null;
+        String selectQuery = "SELECT * FROM transactions WHERE id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+
+            selectStatement.setObject(1, id, Types.OTHER);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Transaction transaction = Transaction.builder()
+                        .id(UUID.fromString(resultSet.getObject("id", PGobject.class).getValue()))
+                        .status(TransferRequestStatus.valueOf(resultSet.getString("status")))
+                        .sender(resultSet.getString("sender"))
+                        .recipient(resultSet.getString("recipient"))
+                        .amount(resultSet.getBigDecimal("amount"))
+                        .build();
+                return transaction;
+            }
+
+            throw new NoSuchTransactionException(
+                    String.format("Не существует транзакции с id=%s", id)
+            );
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public Collection<Transaction> getTransactionsBySenderAndRecipientAndStatus(String sender, String recipient, TransferRequestStatus status) {
-        return null;
+    public Collection<Transaction> getTransactionsBySenderAndRecipientAndStatus(String sender,
+                                                                                String recipient,
+                                                                                TransferRequestStatus status) {
+        String selectQuery = buildDynamicQuery(sender, recipient, status);
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+            int columnIndex = 1;
+
+            if (sender != null) {
+                selectStatement.setString(columnIndex, sender);
+                columnIndex++;
+            }
+
+            if (recipient != null) {
+                selectStatement.setString(columnIndex, recipient);
+                columnIndex++;
+            }
+
+            if (status != null) {
+                selectStatement.setString(columnIndex, status.name());
+            }
+
+            ResultSet resultSet = selectStatement.executeQuery();
+            List<Transaction> transactions = new ArrayList<>();
+            while (resultSet.next()) {
+                transactions.add(
+                        new Transaction(
+                                UUID.fromString(resultSet.getObject(1, PGobject.class).toString()),
+                                TransferRequestStatus.valueOf(resultSet.getString("status")),
+                                resultSet.getString("sender"),
+                                resultSet.getString("recipient"),
+                                resultSet.getBigDecimal("amount")
+                        )
+                );
+            }
+            return transactions;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Collection<Transaction> getDebitingTransactions(String login) {
-        return null;
+        return getTransactionsBySenderAndRecipientAndStatus(login, null, null);
     }
 
     @Override
     public Collection<Transaction> getCreditingTransactions(String login) {
-        return null;
+        return getTransactionsBySenderAndRecipientAndStatus(null, login, null);
     }
 
     @Override
     public Transaction approveTransaction(String donorUsername, UUID id) {
-        return null;
+        Transaction transaction = getById(id);
+
+        if (!transaction.getSender().equals(donorUsername))
+            throw new TransactionStatusException("Вы не можете подтвердить чужую транзакцию!");
+
+        if (!transaction.getStatus().equals(TransferRequestStatus.PENDING))
+            throw new TransactionStatusException("Только транзакции в режиме подтверждения могут быть одобрены");
+
+        String updateQuery = "UPDATE transactions SET status = ? WHERE id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+            PGobject uuid = new PGobject();
+            uuid.setType("uuid");
+            uuid.setValue(transaction.getId().toString());
+
+            updateStatement.setString(1, TransferRequestStatus.APPROVED.name());
+            updateStatement.setObject(2, uuid);
+            updateStatement.executeUpdate();
+
+            transaction.setStatus(TransferRequestStatus.APPROVED);
+            return transaction;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Transaction declineTransaction(String donorUsername, UUID id) {
-        return null;
+        Transaction transaction = getById(id);
+
+        if (!transaction.getSender().equals(donorUsername))
+            throw new TransactionStatusException("Вы не можете отклонить чужую транзакцию!");
+
+        if (!transaction.getStatus().equals(TransferRequestStatus.PENDING))
+            throw new TransactionStatusException("Только транзакции в режиме подтверждения могут быть отклонены");
+
+        String updateQuery = "UPDATE transactions SET status = ? WHERE id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+            PGobject uuid = new PGobject();
+            uuid.setType("uuid");
+            uuid.setValue(transaction.getId().toString());
+
+            updateStatement.setString(1, TransferRequestStatus.DECLINED.name());
+            updateStatement.setObject(2, uuid);
+            updateStatement.executeUpdate();
+
+            transaction.setStatus(TransferRequestStatus.DECLINED);
+            return transaction;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Transaction setFailed(UUID id) {
+        Transaction transaction = getById(id);
+        String updateQuery = "UPDATE transactions SET status = ? WHERE id = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+            PGobject uuid = new PGobject();
+            uuid.setType("uuid");
+            uuid.setValue(id.toString());
+
+            updateStatement.setString(1, TransferRequestStatus.DECLINED.name());
+            updateStatement.setObject(2, uuid);
+            updateStatement.executeUpdate();
+
+            transaction.setStatus(TransferRequestStatus.DECLINED);
+            return transaction;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String buildDynamicQuery(String sender, String recipient, TransferRequestStatus status) {
+        String baseSelectQuery = "SELECT * FROM transactions";
+        boolean noQueryConditionsAdded = true;
+
+        if (sender != null) {
+            baseSelectQuery += " WHERE sender = ?";
+            noQueryConditionsAdded = false;
+        }
+
+        if (recipient != null) {
+            if (noQueryConditionsAdded) {
+                baseSelectQuery += " WHERE recipient = ?";
+                noQueryConditionsAdded = false;
+            } else {
+                baseSelectQuery += " AND recipient = ?";
+            }
+        }
+
+        if (status != null) {
+            if (noQueryConditionsAdded) {
+                baseSelectQuery += " WHERE status = ?";
+            } else {
+                baseSelectQuery += " AND status = ?";
+            }
+        }
+
+        return baseSelectQuery;
     }
 }
