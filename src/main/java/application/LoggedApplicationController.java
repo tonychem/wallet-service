@@ -22,6 +22,10 @@ import java.util.UUID;
  */
 @Slf4j
 public class LoggedApplicationController extends ApplicationController {
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AuthenticationDto registerUser(PlayerCreationRequest request) throws BadCredentialsException {
         try {
@@ -38,6 +42,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AuthenticationDto authenticate(AuthenticationRequest request) throws BadCredentialsException {
         try {
@@ -54,6 +61,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BalanceDto getBalance(Long id, UUID sessionId) throws UnauthorizedOperationException {
         try {
@@ -69,6 +79,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BalanceDto transferMoney(String sender, String recipient, BigDecimal amount, UUID sessionId, UUID transactionId)
             throws UnauthorizedOperationException {
@@ -85,6 +98,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean requestMoneyFrom(String requester, String donor, BigDecimal amount, UUID sessionId, UUID transactionId)
             throws UnauthorizedOperationException {
@@ -99,6 +115,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<MoneyTransferRequest> getPendingMoneyRequests(String login, UUID sessionId) throws UnauthorizedOperationException {
         try {
@@ -112,6 +131,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<TransactionDto> getHistory(String login, PlayerAction action, UUID sessionId) throws UnauthorizedOperationException {
         try {
@@ -125,6 +147,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public MoneyTransferResponse approvePendingRequest(UUID sessionId, String donorUsername, UUID transactionId) throws UnauthorizedOperationException {
         try {
@@ -140,6 +165,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void declinePendingRequest(UUID sessionId, String donorUsername, UUID transactionId) throws UnauthorizedOperationException {
         try {
@@ -154,6 +182,9 @@ public class LoggedApplicationController extends ApplicationController {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void signOut(String username, UUID sessionId) {
         try {

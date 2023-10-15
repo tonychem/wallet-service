@@ -8,10 +8,25 @@ import java.util.UUID;
 
 public interface PlayerService {
 
+    /**
+     * Аутентификация пользователя
+     * @param login логин пользователя для аутентификации
+     * @param password пароль в зашифрованном виде (MD5 алгоритм)
+     * @throws BadCredentialsException
+     */
     AuthenticatedPlayerDto authenticate(String login, byte[] password) throws BadCredentialsException;
 
+    /**
+     * Регистрация пользователя
+     * @param playerCreationRequest обертка над пользовательскими секретами (логин, пароль, ник)
+     * @throws BadCredentialsException
+     */
     AuthenticatedPlayerDto register(PlayerCreationRequest playerCreationRequest) throws BadCredentialsException;
 
+    /**
+     * Получение баланса пользователя по идентификатору
+     * @param id идентификатор пользователя
+     */
     AuthenticatedPlayerDto getBalance(Long id);
 
     /**

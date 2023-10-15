@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="initial-data-import" author="tonychem">
+        <validCheckSum>9:0a6304d844e56c6dfc2a5a9ee5c0c050</validCheckSum>
+        
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="players" schemaName="${domain.schema.name}"/>
+            <tableExists tableName="transactions" schemaName="${domain.schema.name}"/>
+            <sequenceExists sequenceName="player_id_sequence" schemaName="${domain.schema.name}"/>
+            <dbms type="postgresql"/>
+        </preConditions>
+        
+        <insert tableName="players" schemaName="${domain.schema.name}">
+            <column name="id" valueSequenceNext="player_id_sequence" autoIncrement="false"/>
+            <column name="username" value="admin"/>
+            <column name="login" value="admin"/>
+            <!--password is MD5-digested value for "admin"-->
+            <column name="password" value="\x21232f297a57a5a743894a0e4a801fc3"/>
+            <column name="balance" value="10.000"/>
+        </insert>
+
+        <insert tableName="players" schemaName="${domain.schema.name}">
+            <column name="id" valueSequenceNext="player_id_sequence" autoIncrement="false"/>
+            <column name="username" value="user"/>
+            <column name="login" value="user"/>
+            <!--password is MD5-digested value for "user"-->
+            <column name="password" value="\xee11cbb19052e40b07aac0ca060c23ee"/>
+            <column name="balance" value="5.000"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

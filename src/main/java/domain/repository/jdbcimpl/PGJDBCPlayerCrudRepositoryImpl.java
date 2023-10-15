@@ -17,7 +17,7 @@ public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
     private final String schema;
 
     public PGJDBCPlayerCrudRepositoryImpl() {
-        this.schema = System.getProperty("jdbc.domain.schema");
+        this.schema = System.getProperty("domain.schema.name");
         this.username = System.getProperty("jdbc.username");
         this.password = System.getProperty("jdbc.password");
         this.URL = System.getProperty("jdbc.url") + "?currentSchema=" + this.schema;
@@ -165,6 +165,21 @@ public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
             throw new NoSuchPlayerException(
                     String.format("Пользователь с именем пользователя username=%s не существует", username)
             );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Player setBalance(String login, BigDecimal newBalance) {
+        String updateQuery = "UPDATE players SET balance = ? WHERE login = ?";
+
+        try (Connection connection = DriverManager.getConnection(URL, username, password);
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+            updateStatement.setBigDecimal(1, newBalance);
+            updateStatement.setString(2, login);
+            updateStatement.executeUpdate();
+            return getByLogin(login);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

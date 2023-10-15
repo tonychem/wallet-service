@@ -58,7 +58,9 @@ public class ControllerUI {
     }
 
     /**
-     * Главный метод, отвественный за пользовательский поток управления
+     * Главный метод, отвественный за пользовательский поток управления.
+     * Первое меню содержит возможность авторизации/регистрации нового игрока.
+     * После авторизации игроку доступно меню авторизованного пользователя.
      */
     public void beginInteraction() {
         try (Scanner scan = new Scanner(System.in)) {
@@ -72,7 +74,7 @@ public class ControllerUI {
                 }
 
                 assert session != null;
- 
+
                 printAuthenticatedUserMenu();
 
                 Holder<Boolean> mainMenuExitSignalHolder = Holder.of(Boolean.FALSE);
@@ -86,9 +88,6 @@ public class ControllerUI {
 
     /**
      * Метод вызова меню аутентификации
-     *
-     * @param scan
-     * @param exitRequest
      */
     private void authenticationWindowCall(Scanner scan, Holder<Boolean> exitRequest) {
         printLandingMenu();
@@ -114,9 +113,6 @@ public class ControllerUI {
 
     /**
      * Метод вызова основного меню взаимодействия с авторизованным пользователем
-     *
-     * @param scan
-     * @param mainMenuExitHolder
      */
     private void authenticatedUserMainMenuCall(Scanner scan, Holder<Boolean> mainMenuExitHolder) {
         int authenticatedUserOptions = readInputKey(scan);
@@ -137,6 +133,9 @@ public class ControllerUI {
         System.out.println(LANDING_MENU);
     }
 
+    /**
+     * Вычитывает входящее от пользователя число
+     */
     private int readInputKey(Scanner scan) {
         int value = -1;
 
@@ -151,6 +150,9 @@ public class ControllerUI {
         return value;
     }
 
+    /**
+     * Собирает пользовательскую информацию (логин, пароль, ник) для создания нового игрока.
+     */
     private PlayerCreationRequest gatherRegisterInfo(Scanner scanner) {
         String login;
         String password;
@@ -169,6 +171,9 @@ public class ControllerUI {
         return new PlayerCreationRequest(login, passEncoded, username);
     }
 
+    /**
+     * Меню регистрации нового пользователя.
+     */
     private AuthenticationDto registerUser(Scanner scanner) {
         AuthenticationDto authenticationDto = null;
 
@@ -183,12 +188,18 @@ public class ControllerUI {
         return authenticationDto;
     }
 
+    /**
+     * Открытие новой пользовательской сессии при успешной регистрации/аутентификации.
+     */
     private void createNewSession(AuthenticationDto authenticationDto) {
         this.session = new Session(authenticationDto.getId(), authenticationDto.getLogin(),
                 authenticationDto.getUsername(),
                 authenticationDto.getSessionId());
     }
 
+    /**
+     * Меню авторизации пользователя.
+     */
     private AuthenticationDto authenticateUser(Scanner scanner) {
         AuthenticationDto authenticationDto = null;
 
@@ -206,6 +217,9 @@ public class ControllerUI {
         return authenticationDto;
     }
 
+    /**
+     * Собирает пользовательскую информацию (логин, пароль) для авторизации игрока.
+     */
     private AuthenticationRequest gatherAuthenticationInfo(Scanner scanner) {
         String login;
         String password;
@@ -224,6 +238,9 @@ public class ControllerUI {
         System.out.println(PLAYER_MAIN_MENU);
     }
 
+    /**
+     * Меню текущего баланса пользователя.
+     */
     private void balancePrinter() {
         try {
             BalanceDto balance =
@@ -234,6 +251,9 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню перевода денежных средств от текущего пользователя другому игроку.
+     */
     private void transferMoneyHandler(Scanner scan) {
         try {
             System.out.println("Введите логин, кому хотите отправить деньги: ");
@@ -264,6 +284,9 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню запроса денежных средств текущим пользователем от другого игрока.
+     */
     private void requestMoneyHandler(Scanner scan) {
         try {
             System.out.println("Введите логин, от которого хотите получить деньги: ");
@@ -294,6 +317,9 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню, выводящее все непринятные запросы на перевод денежных средств от других пользователей.
+     */
     private void pendingMoneyRequestsPrinter() {
         try {
             Collection<MoneyTransferRequest> requests =
@@ -312,6 +338,9 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню подтверждения текущим пользователем непринятых денежных запросов от других игроков.
+     */
     private void moneyRequestApprovalHandler(Scanner scan) {
         System.out.println("Введите id транзаций для подтверждения через запятую: ");
         List<UUID> ids = readUUIDsFromInput(scan);
@@ -326,6 +355,9 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню отклонения непринятых заявок текущим пльзователем от других игроков.
+     */
     private void declinePendingRequestsHandler(Scanner scan) {
         System.out.println("Введите id транзаций для отмены через запятую: ");
 
@@ -342,6 +374,9 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню печати истории транзакций текущего пользователя.
+     */
     private void historyPrinter(Scanner scan) {
         try {
             printHistoryMenu();
@@ -383,12 +418,20 @@ public class ControllerUI {
         }
     }
 
+    /**
+     * Меню деавторизации текущего пользователя.
+     *
+     * @param mainMenuExitHolder плейсхолдер для флага, который опрашивающет, завершена ли текущая сессия
+     */
     private void signOutHandler(Holder<Boolean> mainMenuExitHolder) {
         controller.signOut(session.getLogin(), session.getSessionId());
         this.session = null;
         mainMenuExitHolder.setValue(Boolean.TRUE);
     }
 
+    /**
+     * Вспомогательный метод для чтения строки из пользовательского ввода.
+     */
     private String readInputString(Scanner scanner) {
         String input;
 
@@ -399,6 +442,11 @@ public class ControllerUI {
         return input;
     }
 
+    /**
+     * Вспомогательный метод для чтения UUID транзакций, введенных пользователем через разделитель (запятую).
+     *
+     * @return список UUID
+     */
     private List<UUID> readUUIDsFromInput(Scanner scan) {
         String[] transactionStringView = scan.nextLine().split(",");
         List<UUID> ids = new ArrayList<>();

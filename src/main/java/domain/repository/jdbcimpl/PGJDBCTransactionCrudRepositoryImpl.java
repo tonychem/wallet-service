@@ -23,7 +23,7 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
     private final String schema;
 
     public PGJDBCTransactionCrudRepositoryImpl() {
-        this.schema = System.getProperty("jdbc.domain.schema");
+        this.schema = System.getProperty("domain.schema.name");
         this.username = System.getProperty("jdbc.username");
         this.password = System.getProperty("jdbc.password");
         this.URL = System.getProperty("jdbc.url") + "?currentSchema=" + this.schema;
@@ -99,6 +99,9 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Transaction> getTransactionsBySenderAndRecipientAndStatus(String sender,
                                                                                 String recipient,
@@ -142,16 +145,25 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Transaction> getDebitingTransactions(String login) {
         return getTransactionsBySenderAndRecipientAndStatus(login, null, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Transaction> getCreditingTransactions(String login) {
         return getTransactionsBySenderAndRecipientAndStatus(null, login, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transaction approveTransaction(String donorUsername, UUID id) {
         Transaction transaction = getById(id);
@@ -181,6 +193,9 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transaction declineTransaction(String donorUsername, UUID id) {
         Transaction transaction = getById(id);
@@ -210,6 +225,9 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transaction setFailed(UUID id) {
         Transaction transaction = getById(id);
@@ -232,6 +250,13 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         }
     }
 
+    /**
+     * Вспомогательнй метод для формирования динамического sql запроса для извлечения списка транзакций
+     *
+     * @param sender    отправитель денежных средств
+     * @param recipient получатель денежных средств
+     * @param status    статус транзакции
+     */
     private String buildDynamicQuery(String sender, String recipient, TransferRequestStatus status) {
         String baseSelectQuery = "SELECT * FROM transactions";
         boolean noQueryConditionsAdded = true;

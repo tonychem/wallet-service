@@ -20,6 +20,7 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
 
     /**
      * Создание пользователя.
+     *
      * @param newPlayer новый игрок, содержащий поля username, login, password.
      */
     @Override
@@ -89,5 +90,10 @@ public class InMemoryPlayerCrudRepositoryImpl implements PlayerCrudRepository {
         );
     }
 
-
+    @Override
+    public Player setBalance(String login, BigDecimal newBalance) {
+        Player player = getByLogin(login);
+        player.setBalance(newBalance);
+        return player;
+    }
 }

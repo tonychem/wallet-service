@@ -24,6 +24,7 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
 
     /**
      * Создание транзакции
+     *
      * @param request обертка над набором входных параметров при составлении запроса на получение денег
      */
     @Override
@@ -56,6 +57,9 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         return transaction;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Transaction> getTransactionsBySenderAndRecipientAndStatus(String sender, String recipient,
                                                                                 TransferRequestStatus status) {
@@ -79,16 +83,25 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         return baseStream.collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Transaction> getDebitingTransactions(String login) {
         return getTransactionsBySenderAndRecipientAndStatus(login, null, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Collection<Transaction> getCreditingTransactions(String login) {
         return getTransactionsBySenderAndRecipientAndStatus(null, login, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transaction approveTransaction(String donorUsername, UUID id) {
         Transaction transaction = getById(id);
@@ -103,6 +116,9 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         return transaction;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transaction declineTransaction(String donorUsername, UUID id) {
         Transaction transaction = getById(id);
@@ -117,6 +133,9 @@ public class InMemoryTransactionCrudeRepositoryImpl implements TransactionCrudRe
         return transaction;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Transaction setFailed(UUID id) {
         Transaction transaction = getById(id);

@@ -5,6 +5,7 @@ import domain.repository.inmemoryimpl.InMemoryPlayerCrudRepositoryImpl;
 import domain.service.PlayerServiceImpl;
 import infrastructure.ControllerUI;
 import util.ConfigFileReader;
+import util.MigrationTool;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -14,10 +15,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class MainApplication {
-    public static void main(String[] args) throws NoSuchAlgorithmException,
-            NoSuchFieldException, IllegalAccessException, IOException {
-//        populateBd();
+    public static void main(String[] args) throws IOException {
         ConfigFileReader.read("application.properties");
+        MigrationTool.applyMigration(System.getProperty("liquibase.changelogFile.path"));
         new ControllerUI().beginInteraction();
     }
 
@@ -30,6 +30,7 @@ public class MainApplication {
      * @throws IllegalAccessException
      * @throws NoSuchAlgorithmException
      */
+    @Deprecated
     public static void populateBd() throws NoSuchFieldException, IllegalAccessException, NoSuchAlgorithmException {
         ApplicationController controller = ApplicationControllerFactory.getInstance();
 

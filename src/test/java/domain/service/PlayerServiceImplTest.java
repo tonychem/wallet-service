@@ -171,6 +171,16 @@ class PlayerServiceImplTest {
                 });
         when(mockTransactionCrudRepository.create(moneyTransferRequest))
                 .thenReturn(transaction);
+        when(mockPlayerCrudRepository.setBalance(any(), any()))
+                .thenAnswer(invocationOnMock -> {
+                    Player newAdmin = Player.builder()
+                            .username(admin.getUsername())
+                            .login(admin.getLogin())
+                            .password(admin.getPassword())
+                            .balance(admin.getBalance().subtract(moneyTransferRequest.getAmount()))
+                            .build();
+                    return newAdmin;
+                });
 
         MoneyTransferResponse response = playerService.transferMoneyTo(moneyTransferRequest);
 

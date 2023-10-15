@@ -1,5 +1,8 @@
 package util;
 
+/**
+ * Вспомогательный класс, который хранит единственное значение
+ */
 public class Holder<T> {
     private T value;
 
