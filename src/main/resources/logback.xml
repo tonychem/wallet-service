@@ -17,7 +17,7 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="FILE-ROLLING"/>
     </root>
 </configuration>
