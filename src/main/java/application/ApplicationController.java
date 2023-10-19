@@ -4,11 +4,11 @@ import application.dto.AuthenticationDto;
 import application.dto.AuthenticationRequest;
 import application.dto.BalanceDto;
 import application.exception.UnauthorizedOperationException;
-import domain.exception.BadCredentialsException;
-import domain.model.dto.*;
-import domain.service.PlayerAction;
-import domain.service.PlayerService;
-import domain.service.PlayerServiceImpl;
+import domain.dto.*;
+import exception.BadCredentialsException;
+import service.PlayerAction;
+import service.PlayerService;
+import service.PlayerServiceImpl;
 
 import java.math.BigDecimal;
 import java.util.Collection;

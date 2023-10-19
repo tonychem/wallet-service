@@ -4,12 +4,12 @@ import application.dto.AuthenticationDto;
 import application.dto.AuthenticationRequest;
 import application.dto.BalanceDto;
 import application.exception.UnauthorizedOperationException;
-import domain.exception.BadCredentialsException;
-import domain.model.dto.MoneyTransferRequest;
-import domain.model.dto.MoneyTransferResponse;
-import domain.model.dto.PlayerCreationRequest;
-import domain.model.dto.TransactionDto;
-import domain.service.PlayerAction;
+import exception.BadCredentialsException;
+import domain.dto.MoneyTransferRequest;
+import domain.dto.MoneyTransferResponse;
+import domain.dto.PlayerCreationRequest;
+import domain.dto.TransactionDto;
+import service.PlayerAction;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
