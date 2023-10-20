@@ -81,9 +81,14 @@ public abstract class AbstractPGJDBCCrudRepositoryTest {
                 DROP TABLE transactions
                  """;
 
+        String dropLogsTableQuery = """
+                DROP TABLE logs
+                """;
+
         statement.execute(dropTablePlayersQuery);
         statement.execute(dropPlayerSequenceQuery);
         statement.execute(dropTransactionQuery);
+        statement.execute(dropLogsTableQuery);
     }
 
     /**

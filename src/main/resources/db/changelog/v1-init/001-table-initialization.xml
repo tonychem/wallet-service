@@ -18,6 +18,9 @@
                 <tableExists tableName="transactions"/>
             </not>
             <not>
+                <tableExists tableName="logs"/>
+            </not>
+            <not>
                 <sequenceExists sequenceName="player_id_sequence"/>
             </not>
             <dbms type="postgresql"/>
@@ -60,6 +63,12 @@
             <column name="amount" type="numeric(15,3)">
                 <constraints nullable="false"/>
             </column>
+        </createTable>
+        
+        <createTable tableName="logs">
+            <column name="datetime" type="timestamp"/>
+            <column name="level" type="varchar(20)"/>
+            <column name="message" type="text"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

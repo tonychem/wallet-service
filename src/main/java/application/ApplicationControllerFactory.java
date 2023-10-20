@@ -1,5 +1,7 @@
 package application;
 
+import application.logging.PGSQLLoggerImpl;
+
 /**
  * Фабрика контроллера уровня приложения.
  */
@@ -14,7 +16,7 @@ public class ApplicationControllerFactory {
      */
     public static ApplicationController getInstance() {
         if (applicationController == null) {
-            applicationController = new LoggedApplicationController();
+            applicationController = new LoggedApplicationController(new PGSQLLoggerImpl());
         }
         return applicationController;
     }
