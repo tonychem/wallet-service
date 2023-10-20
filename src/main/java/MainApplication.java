@@ -1,19 +1,24 @@
 import application.ApplicationController;
 import application.ApplicationControllerFactory;
-import domain.model.Player;
-import domain.repository.InMemoryPlayerCrudRepositoryImpl;
-import domain.service.PlayerServiceImpl;
-import infrastructure.ControllerUI;
+import domain.Player;
+import repository.inmemoryimpl.InMemoryPlayerCrudRepositoryImpl;
+import service.PlayerServiceImpl;
+import controller.ControllerUI;
+import util.ConfigFileReader;
+import util.MigrationTool;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Properties;
 
 public class MainApplication {
-    public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchFieldException, IllegalAccessException {
-        populateBd();
+    public static void main(String[] args) throws IOException {
+        Properties properties = ConfigFileReader.read("application.properties");
+        MigrationTool.applyMigration(properties);
         new ControllerUI().beginInteraction();
     }
 
@@ -26,6 +31,7 @@ public class MainApplication {
      * @throws IllegalAccessException
      * @throws NoSuchAlgorithmException
      */
+    @Deprecated
     public static void populateBd() throws NoSuchFieldException, IllegalAccessException, NoSuchAlgorithmException {
         ApplicationController controller = ApplicationControllerFactory.getInstance();
 
