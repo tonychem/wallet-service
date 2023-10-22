@@ -3,6 +3,7 @@ package application;
 import application.dto.AuthenticationDto;
 import application.dto.AuthenticationRequest;
 import application.dto.BalanceDto;
+import application.mapper.AuthenticationMapper;
 import domain.dto.*;
 import exception.BadCredentialsException;
 import exception.UnauthorizedOperationException;
@@ -27,14 +28,18 @@ public class ApplicationController {
     private final Map<UUID, String> authentications;
     private final PlayerService playerService;
 
+    private final AuthenticationMapper authenticationMapper;
+
     public ApplicationController() {
         this.playerService = new PlayerServiceImpl();
-        authentications = new HashMap<>();
+        this.authentications = new HashMap<>();
+        this.authenticationMapper = AuthenticationMapper.INSTANCE;
     }
 
     public ApplicationController(Map<UUID, String> authentications, PlayerService playerService) {
         this.authentications = authentications;
         this.playerService = playerService;
+        this.authenticationMapper = AuthenticationMapper.INSTANCE;
     }
 
     /**
@@ -50,9 +55,7 @@ public class ApplicationController {
                 authenticatedPlayerDto.getLogin(), authenticatedPlayerDto.getUsername(), sessionId);
 
         authentications.put(sessionId, authenticatedPlayerDto.getLogin());
-        return new AuthenticationDto(authentication.getId(),
-                authentication.getLogin(), authentication.getUsername(), authentication.getSessionID(),
-                authenticatedPlayerDto.getBalance());
+        return authenticationMapper.toAuthenticationDto(authentication);
     }
 
     /**
@@ -66,8 +69,7 @@ public class ApplicationController {
 
         authentications.put(sessionId, authenticatedPlayerDto.getLogin());
 
-        return new AuthenticationDto(authenticatedPlayerDto.getId(), authenticatedPlayerDto.getLogin(),
-                authenticatedPlayerDto.getUsername(), sessionId, authenticatedPlayerDto.getBalance());
+        return authenticationMapper.toAuthenticationDto(sessionId, authenticatedPlayerDto);
     }
 
     /**
@@ -81,7 +83,7 @@ public class ApplicationController {
     public BalanceDto getBalance(Long id, UUID sessionId) throws UnauthorizedOperationException {
         if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
         AuthenticatedPlayerDto playerDto = playerService.getBalance(id);
-        return new BalanceDto(playerDto.getId(), playerDto.getUsername(), playerDto.getBalance());
+        return authenticationMapper.toBalanceDto(playerDto);
     }
 
     /**

@@ -24,6 +24,7 @@ public class ValidatingObjectMapper extends ObjectMapper {
      *
      * @param content   входящий JSON объект в виде строки
      * @param valueType соответствующий JSON объекту Java тип
+     * @return T валидированный POJO
      * @throws ConstraintViolationException при нарушении валидации
      */
     public <T> T validateValue(String content, Class<T> valueType)

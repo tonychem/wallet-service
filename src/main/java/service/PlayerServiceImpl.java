@@ -4,6 +4,8 @@ import domain.Player;
 import domain.Transaction;
 import domain.TransferRequestStatus;
 import domain.dto.*;
+import domain.mapper.PlayerMapper;
+import domain.mapper.TransactionMapper;
 import exception.BadCredentialsException;
 import exception.DeficientBalanceException;
 import exception.PlayerAlreadyExistsException;
@@ -22,17 +24,24 @@ public class PlayerServiceImpl implements PlayerService {
     private final PlayerCrudRepository playerRepository;
     private final TransactionCrudRepository transactionRepository;
 
+    private final PlayerMapper playerMapper;
+    private final TransactionMapper transactionMapper;
+
     /**
      * Конструктор по умолчанию использует репозитории, хранящиеся в БД
      */
     public PlayerServiceImpl() {
         this.playerRepository = new PGJDBCPlayerCrudRepositoryImpl();
         this.transactionRepository = new PGJDBCTransactionCrudRepositoryImpl();
+        this.playerMapper = PlayerMapper.INSTANCE;
+        this.transactionMapper = TransactionMapper.INSTANCE;
     }
 
     public PlayerServiceImpl(PlayerCrudRepository playerRepository, TransactionCrudRepository transactionRepository) {
         this.playerRepository = playerRepository;
         this.transactionRepository = transactionRepository;
+        this.playerMapper = PlayerMapper.INSTANCE;
+        this.transactionMapper = TransactionMapper.INSTANCE;
     }
 
     /**
@@ -44,8 +53,7 @@ public class PlayerServiceImpl implements PlayerService {
 
         if (!Arrays.equals(player.getPassword(), password)) throw new BadCredentialsException("Некорректный пароль");
 
-        return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
-                player.getBalance());
+        return playerMapper.toAuthenticatedPlayerDto(player);
     }
 
     /**
@@ -62,8 +70,7 @@ public class PlayerServiceImpl implements PlayerService {
 
             Player player = playerRepository.create(newPlayer);
 
-            return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
-                    player.getBalance());
+            return playerMapper.toAuthenticatedPlayerDto(player);
         } catch (PlayerAlreadyExistsException e) {
             throw new BadCredentialsException(e.getMessage());
         }
@@ -75,8 +82,7 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public AuthenticatedPlayerDto getBalance(Long id) {
         Player player = playerRepository.getById(id);
-        return new AuthenticatedPlayerDto(player.getId(), player.getLogin(), player.getUsername(),
-                player.getBalance());
+        return playerMapper.toAuthenticatedPlayerDto(player);
     }
 
     /**
@@ -99,10 +105,8 @@ public class PlayerServiceImpl implements PlayerService {
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
 
         return new MoneyTransferResponse(
-                new AuthenticatedPlayerDto(requester.getId(), requester.getLogin(),
-                        requester.getUsername(), requester.getBalance()),
-                new TransactionDto(transaction.getId(), transaction.getStatus(),
-                        donor.getUsername(), transaction.getRecipient(), transaction.getAmount())
+                playerMapper.toAuthenticatedPlayerDto(requester),
+                transactionMapper.toTransactionDto(transaction)
         );
     }
 
@@ -116,8 +120,7 @@ public class PlayerServiceImpl implements PlayerService {
         );
 
         return transactions.stream()
-                .map(transaction -> new MoneyTransferRequest(transaction.getId(),
-                        transaction.getSender(), transaction.getRecipient(), transaction.getAmount()))
+                .map(transactionMapper::toMoneyTransferRequest)
                 .collect(Collectors.toList());
     }
 
@@ -129,11 +132,7 @@ public class PlayerServiceImpl implements PlayerService {
         Transaction transaction = transactionRepository.approveTransaction(donorUsername, requestId);
 
         return transferMoneyBetweenAccounts(transaction,
-                new MoneyTransferRequest(
-                        transaction.getId(),
-                        transaction.getSender(),
-                        transaction.getRecipient(),
-                        transaction.getAmount())
+                transactionMapper.toMoneyTransferRequest(transaction)
         );
     }
 
@@ -161,10 +160,7 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         return transactionsByUser.stream()
-                .map(transaction -> new TransactionDto(
-                        transaction.getId(), transaction.getStatus(), transaction.getSender(),
-                        transaction.getRecipient(), transaction.getAmount()
-                ))
+                .map(transactionMapper::toTransactionDto)
                 .collect(Collectors.toList());
     }
 
@@ -198,11 +194,8 @@ public class PlayerServiceImpl implements PlayerService {
                 transactionRepository.approveTransaction(sender.getLogin(), transaction.getId());
 
         return new MoneyTransferResponse(
-                new AuthenticatedPlayerDto(sender.getId(), sender.getLogin(), sender.getUsername(),
-                        sender.getBalance()),
-                new TransactionDto(approvedTransaction.getId(), approvedTransaction.getStatus(),
-                        approvedTransaction.getSender(), approvedTransaction.getRecipient(),
-                        approvedTransaction.getAmount())
+                playerMapper.toAuthenticatedPlayerDto(sender),
+                transactionMapper.toTransactionDto(approvedTransaction)
         );
     }
 }
