@@ -1,7 +1,5 @@
 package service;
 
-import exception.BadCredentialsException;
-import exception.DeficientBalanceException;
 import domain.Player;
 import domain.Transaction;
 import domain.TransferRequestStatus;
@@ -9,16 +7,15 @@ import domain.dto.AuthenticatedPlayerDto;
 import domain.dto.MoneyTransferRequest;
 import domain.dto.MoneyTransferResponse;
 import domain.dto.PlayerCreationRequest;
-import repository.PlayerCrudRepository;
-import repository.TransactionCrudRepository;
+import exception.BadCredentialsException;
+import exception.DeficientBalanceException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import service.PlayerService;
-import service.PlayerServiceImpl;
-import util.MigrationTool;
+import repository.PlayerCrudRepository;
+import repository.TransactionCrudRepository;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;

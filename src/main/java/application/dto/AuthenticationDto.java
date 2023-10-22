@@ -1,5 +1,6 @@
 package application.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class AuthenticationDto {
     private final Long id;
     private final String login;
     private final String username;
+    @JsonIgnore
     private final UUID sessionId;
     private BigDecimal balance;
 }

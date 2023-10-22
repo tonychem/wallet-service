@@ -3,7 +3,7 @@ package application;
 import application.dto.AuthenticationDto;
 import application.dto.AuthenticationRequest;
 import application.dto.BalanceDto;
-import application.exception.UnauthorizedOperationException;
+import exception.UnauthorizedOperationException;
 import application.logging.Logger;
 import domain.dto.MoneyTransferRequest;
 import domain.dto.MoneyTransferResponse;

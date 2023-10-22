@@ -1,13 +1,17 @@
 package application.dto;
 
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BalanceDto {
-    Long id;
-    String username;
-    BigDecimal balance;
+    private Long id;
+    private String username;
+    private BigDecimal balance;
 }

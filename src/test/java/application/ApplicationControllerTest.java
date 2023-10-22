@@ -3,18 +3,18 @@ package application;
 import application.dto.AuthenticationDto;
 import application.dto.AuthenticationRequest;
 import application.dto.BalanceDto;
-import application.exception.UnauthorizedOperationException;
 import domain.dto.AuthenticatedPlayerDto;
 import domain.dto.PlayerCreationRequest;
-import service.PlayerService;
+import exception.UnauthorizedOperationException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import service.PlayerService;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,13 +27,13 @@ import static org.mockito.Mockito.when;
 @DisplayName("Application level test class")
 class ApplicationControllerTest {
     private PlayerService mockPlayerService;
-    private HashSet<UUID> authorizations;
+    private HashMap<UUID, String> authorizations;
     private ApplicationController controller;
 
     @BeforeEach
     public void init() {
         mockPlayerService = Mockito.mock(PlayerService.class);
-        authorizations = new HashSet<>();
+        authorizations = new HashMap<>();
         controller = new ApplicationController(authorizations, mockPlayerService);
     }
 
@@ -90,7 +90,7 @@ class ApplicationControllerTest {
         when(mockPlayerService.getBalance(any()))
                 .thenReturn(authenticatedPlayerDto);
         UUID sessId = UUID.randomUUID();
-        authorizations.add(sessId);
+        authorizations.put(sessId, authenticatedPlayerDto.getLogin());
 
         BalanceDto balanceDto = controller.getBalance(anyLong(), sessId);
         assertThat(balanceDto.getBalance()).isEqualTo(authenticatedPlayerDto.getBalance());

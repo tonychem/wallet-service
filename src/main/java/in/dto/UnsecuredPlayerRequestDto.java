@@ -1,16 +1,19 @@
-package domain.dto;
+package in.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class PlayerCreationRequest {
+public class UnsecuredPlayerRequestDto {
     @NotBlank
     private String login;
-    private byte[] password;
+    @NotBlank
+    private String password;
+    @NotBlank
     private String username;
 }
