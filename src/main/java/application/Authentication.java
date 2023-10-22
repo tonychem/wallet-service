@@ -14,5 +14,5 @@ public class Authentication {
     Long id;
     String login;
     String username;
-    UUID sessionID;
+    UUID sessionId;
 }

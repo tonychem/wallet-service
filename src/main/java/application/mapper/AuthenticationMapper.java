@@ -9,12 +9,19 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AuthenticationMapper {
     AuthenticationMapper INSTANCE = Mappers.getMapper(AuthenticationMapper.class);
-    AuthenticationDto toAuthenticationDto(Authentication authentication);
+
+    @Mapping(source = "authentication.id", target = "id")
+    @Mapping(source = "authentication.login", target = "login")
+    @Mapping(source = "authentication.username", target = "username")
+    @Mapping(source = "authentication.sessionId", target = "sessionId")
+    @Mapping(source = "balance", target = "balance")
+    AuthenticationDto toAuthenticationDto(Authentication authentication, BigDecimal balance);
 
     @Mapping(source = "playerDto.id", target = "id")
     @Mapping(source = "playerDto.login", target = "login")

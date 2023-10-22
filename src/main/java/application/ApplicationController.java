@@ -55,7 +55,7 @@ public class ApplicationController {
                 authenticatedPlayerDto.getLogin(), authenticatedPlayerDto.getUsername(), sessionId);
 
         authentications.put(sessionId, authenticatedPlayerDto.getLogin());
-        return authenticationMapper.toAuthenticationDto(authentication);
+        return authenticationMapper.toAuthenticationDto(authentication, authenticatedPlayerDto.getBalance());
     }
 
     /**
