@@ -2,7 +2,7 @@ package in.servlet;
 
 import application.ApplicationController;
 import application.ApplicationControllerFactory;
-import application.dto.AuthenticationDto;
+import application.model.dto.AuthenticationDto;
 import domain.dto.PlayerCreationRequest;
 import exception.BadCredentialsException;
 import exception.dto.ExceptionDto;

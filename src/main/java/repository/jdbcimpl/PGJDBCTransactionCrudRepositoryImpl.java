@@ -1,13 +1,13 @@
 package repository.jdbcimpl;
 
-import exception.NoSuchTransactionException;
-import exception.TransactionAlreadyExistsException;
-import exception.TransactionStatusException;
 import domain.Transaction;
 import domain.TransferRequestStatus;
 import domain.dto.MoneyTransferRequest;
-import repository.TransactionCrudRepository;
+import exception.NoSuchTransactionException;
+import exception.TransactionAlreadyExistsException;
+import exception.TransactionStatusException;
 import org.postgresql.util.PGobject;
+import repository.TransactionCrudRepository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -252,8 +252,9 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
     /**
      * Метод проверяет, существует ли транзакция с id, указанным в запросе. Если такая транзакция существует,
      * метод завершает работу с ошибкой.
+     *
      * @param connection соединение с БД
-     * @param request запрос денежных средств
+     * @param request    запрос денежных средств
      * @throws TransactionAlreadyExistsException
      */
     private void checkTransactionExists(Connection connection, MoneyTransferRequest request) {

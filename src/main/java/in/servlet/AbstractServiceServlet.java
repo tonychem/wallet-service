@@ -1,6 +1,6 @@
 package in.servlet;
 
-import application.dto.AuthenticationDto;
+import application.model.dto.AuthenticationDto;
 import config.ValidatingObjectMapper;
 import exception.InvalidTokenException;
 import jakarta.servlet.http.HttpServlet;

@@ -1,7 +1,5 @@
 package application;
 
-import application.logging.PGSQLLoggerImpl;
-
 /**
  * Фабрика контроллера уровня приложения.
  */
@@ -12,11 +10,11 @@ public class ApplicationControllerFactory {
     }
 
     /**
-     * @return Singleton объект типа ApplicationController. По умолчанию, возвращает логируемый LoggedApplocationController.
+     * @return Singleton объект типа ApplicationController.
      */
     public static ApplicationController getInstance() {
         if (applicationController == null) {
-            applicationController = new LoggedApplicationController(new PGSQLLoggerImpl());
+            applicationController = new ApplicationController();
         }
         return applicationController;
     }

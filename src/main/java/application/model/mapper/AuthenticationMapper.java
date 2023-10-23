@@ -1,8 +1,8 @@
-package application.mapper;
+package application.model.mapper;
 
-import application.Authentication;
-import application.dto.AuthenticationDto;
-import application.dto.BalanceDto;
+import application.model.Authentication;
+import application.model.dto.AuthenticationDto;
+import application.model.dto.BalanceDto;
 import domain.dto.AuthenticatedPlayerDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

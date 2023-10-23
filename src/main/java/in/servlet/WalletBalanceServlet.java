@@ -2,7 +2,7 @@ package in.servlet;
 
 import application.ApplicationController;
 import application.ApplicationControllerFactory;
-import application.dto.BalanceDto;
+import application.model.dto.BalanceDto;
 import exception.dto.ExceptionDto;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.ServletException;

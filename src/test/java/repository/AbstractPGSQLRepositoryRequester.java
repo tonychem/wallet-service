@@ -1,4 +1,4 @@
-package repository.db;
+package repository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import java.util.Properties;
  * и удаление всех тестовых данных после выполнения юнит-тестов в классах-наследниках
  */
 @Testcontainers
-public abstract class AbstractPGJDBCCrudRepositoryTest {
+public abstract class AbstractPGSQLRepositoryRequester {
 
     @Container
     protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");

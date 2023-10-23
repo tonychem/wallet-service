@@ -9,6 +9,6 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class TransactionsDto {
+public class TransactionsListDto {
     private Collection<String> ids;
 }

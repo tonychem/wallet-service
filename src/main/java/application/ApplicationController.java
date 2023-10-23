@@ -1,9 +1,12 @@
 package application;
 
-import application.dto.AuthenticationDto;
-import application.dto.AuthenticationRequest;
-import application.dto.BalanceDto;
-import application.mapper.AuthenticationMapper;
+import aop.annotations.Audit;
+import aop.annotations.Performance;
+import application.model.Authentication;
+import application.model.dto.AuthenticationDto;
+import application.model.dto.AuthenticationRequest;
+import application.model.dto.BalanceDto;
+import application.model.mapper.AuthenticationMapper;
 import domain.dto.*;
 import exception.BadCredentialsException;
 import exception.UnauthorizedOperationException;
@@ -23,6 +26,8 @@ import java.util.UUID;
  * предоставления идентификатора сессии. Чтобы получить идентификатор сессии необходимо зарегистрировать
  * нового пользователя или пройти авторизацию.
  */
+@Performance
+@Audit
 public class ApplicationController {
 
     private final Map<UUID, String> authentications;

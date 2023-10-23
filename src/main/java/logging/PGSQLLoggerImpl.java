@@ -1,4 +1,4 @@
-package application.logging;
+package logging;
 
 import java.sql.*;
 
@@ -13,6 +13,13 @@ public class PGSQLLoggerImpl implements Logger {
         this.username = System.getProperty("jdbc.username");
         this.password = System.getProperty("jdbc.password");
         this.URL = System.getProperty("jdbc.url") + "?currentSchema=" + schema;
+    }
+
+    public PGSQLLoggerImpl(String username, String password, String URL, String schema) {
+        this.username = username;
+        this.password = password;
+        this.schema = schema;
+        this.URL = URL + "?currentSchema=" + schema;
     }
 
     @Override

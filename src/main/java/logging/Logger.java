@@ -1,4 +1,4 @@
-package application.logging;
+package logging;
 
 /**
  * Простой логгер, поддерживающий различный уровень логгирования

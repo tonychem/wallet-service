@@ -2,8 +2,8 @@ package in.servlet;
 
 import application.ApplicationController;
 import application.ApplicationControllerFactory;
-import application.dto.AuthenticationDto;
-import application.dto.AuthenticationRequest;
+import application.model.dto.AuthenticationDto;
+import application.model.dto.AuthenticationRequest;
 import config.ValidatingObjectMapper;
 import exception.BadCredentialsException;
 import exception.dto.ExceptionDto;

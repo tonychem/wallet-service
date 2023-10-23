@@ -1,4 +1,4 @@
-package application.dto;
+package application.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

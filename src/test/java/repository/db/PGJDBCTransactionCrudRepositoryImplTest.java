@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import repository.AbstractPGSQLRepositoryRequester;
 import repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 
 import java.util.Collection;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Postgres Transaction Repository test")
-class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGJDBCCrudRepositoryTest {
+class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGSQLRepositoryRequester {
     private PGJDBCTransactionCrudRepositoryImpl transactionRepository;
     private static UUID transactionIdFromUserToAdmin;
     private static UUID transactionIdFromAdminToUserPending;

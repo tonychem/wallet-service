@@ -3,7 +3,7 @@ package in.servlet;
 import application.ApplicationController;
 import application.ApplicationControllerFactory;
 import exception.dto.ExceptionDto;
-import in.dto.TransactionsDto;
+import in.dto.TransactionsListDto;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -37,8 +37,8 @@ public class MoneyRequestDeclineServlet extends AbstractServiceServlet {
             UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(token, claims -> claims.get("session-id")));
 
             String requestBody = req.getReader().lines().collect(Collectors.joining());
-            TransactionsDto transactionsDto = mapper.validateValue(requestBody, TransactionsDto.class);
-            List<UUID> transactionsToApprove = extractValidUUIDsFromString(transactionsDto.getIds());
+            TransactionsListDto transactionsListDto = mapper.validateValue(requestBody, TransactionsListDto.class);
+            List<UUID> transactionsToApprove = extractValidUUIDsFromString(transactionsListDto.getIds());
 
             for (UUID id : transactionsToApprove) {
                 controller.declinePendingRequest(sessionId, username, id);
