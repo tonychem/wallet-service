@@ -20,7 +20,7 @@ import java.util.Properties;
  * и удаление всех тестовых данных после выполнения юнит-тестов в классах-наследниках
  */
 @Testcontainers
-public abstract class AbstractPGSQLRepositoryRequester {
+public abstract class AbstractPGSQLRepositoryConsumer {
 
     @Container
     protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");

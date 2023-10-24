@@ -6,7 +6,7 @@ import exception.PlayerAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import repository.AbstractPGSQLRepositoryRequester;
+import repository.AbstractPGSQLRepositoryConsumer;
 import repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 
 import java.math.BigDecimal;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Postgres Player Repository test")
-class PGJDBCPlayerCrudRepositoryImplTest extends AbstractPGSQLRepositoryRequester {
+class PGJDBCPlayerCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer {
     private PGJDBCPlayerCrudRepositoryImpl playerRepository;
 
     @DisplayName("Should create a new unique player")

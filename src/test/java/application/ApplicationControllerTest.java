@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import repository.AbstractPGSQLRepositoryRequester;
+import repository.AbstractPGSQLRepositoryConsumer;
 import service.PlayerService;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("Application level test class")
 @Testcontainers
-class ApplicationControllerTest extends AbstractPGSQLRepositoryRequester {
+class ApplicationControllerTest extends AbstractPGSQLRepositoryConsumer {
     private PlayerService mockPlayerService;
     private HashMap<UUID, String> authorizations;
     private ApplicationController controller;

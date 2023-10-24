@@ -4,6 +4,7 @@ import application.model.Authentication;
 import application.model.dto.AuthenticationDto;
 import application.model.dto.BalanceDto;
 import domain.dto.AuthenticatedPlayerDto;
+import in.dto.UnsecuredAuthenticationRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

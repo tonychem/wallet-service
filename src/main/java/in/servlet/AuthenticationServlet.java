@@ -8,6 +8,7 @@ import config.ValidatingObjectMapper;
 import exception.BadCredentialsException;
 import exception.dto.ExceptionDto;
 import in.dto.UnsecuredAuthenticationRequestDto;
+import in.mapper.AuthenticationRequestMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,13 +29,19 @@ public class AuthenticationServlet extends AbstractServiceServlet {
     private final ApplicationController controller;
     private final ValidatingObjectMapper mapper;
 
-    private final MessageDigest messageDigest;
-
+    private final AuthenticationRequestMapper authenticationRequestMapper;
     @SneakyThrows
     public AuthenticationServlet() {
         controller = ApplicationControllerFactory.getInstance();
         mapper = new ValidatingObjectMapper();
-        messageDigest = MessageDigest.getInstance("MD5");
+        authenticationRequestMapper = AuthenticationRequestMapper.INSTANCE;
+    }
+
+    @SneakyThrows
+    public AuthenticationServlet(ApplicationController controller) {
+        this.controller = controller;
+        mapper = new ValidatingObjectMapper();
+        authenticationRequestMapper = AuthenticationRequestMapper.INSTANCE;
     }
 
     @Override
@@ -46,8 +53,8 @@ public class AuthenticationServlet extends AbstractServiceServlet {
         try {
             UnsecuredAuthenticationRequestDto unsecuredPlayerRequestDto =
                     mapper.validateValue(requestBody, UnsecuredAuthenticationRequestDto.class);
-            AuthenticationRequest authenticationRequest = new AuthenticationRequest(unsecuredPlayerRequestDto.getLogin(),
-                    messageDigest.digest(unsecuredPlayerRequestDto.getPassword().getBytes()));
+            AuthenticationRequest authenticationRequest =
+                    authenticationRequestMapper.toAuthenticationRequest(unsecuredPlayerRequestDto);
 
             AuthenticationDto authenticatedPlayerDto = controller.authenticate(authenticationRequest);
             resp.setStatus(HttpServletResponse.SC_OK);

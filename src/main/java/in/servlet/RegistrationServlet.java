@@ -7,6 +7,7 @@ import domain.dto.PlayerCreationRequest;
 import exception.BadCredentialsException;
 import exception.dto.ExceptionDto;
 import in.dto.UnsecuredPlayerRequestDto;
+import in.mapper.PlayerRequestMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +16,6 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.stream.Collectors;
 
 /**
@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 public class RegistrationServlet extends AbstractServiceServlet {
 
     private final ApplicationController controller;
-    private final MessageDigest messageDigest;
+    private final PlayerRequestMapper playerRequestMapper;
 
     @SneakyThrows
     public RegistrationServlet() {
         controller = ApplicationControllerFactory.getInstance();
-        messageDigest = MessageDigest.getInstance("MD5");
+        playerRequestMapper = PlayerRequestMapper.INSTANCE;
     }
 
     @Override
@@ -40,9 +40,10 @@ public class RegistrationServlet extends AbstractServiceServlet {
         String requestBody = req.getReader().lines().collect(Collectors.joining());
 
         try {
-            UnsecuredPlayerRequestDto unsecuredPlayerRequestDto = mapper.validateValue(requestBody, UnsecuredPlayerRequestDto.class);
-            PlayerCreationRequest playerCreationRequest = new PlayerCreationRequest(unsecuredPlayerRequestDto.getLogin(),
-                    messageDigest.digest(unsecuredPlayerRequestDto.getPassword().getBytes()), unsecuredPlayerRequestDto.getUsername());
+            UnsecuredPlayerRequestDto unsecuredPlayerRequestDto =
+                    mapper.validateValue(requestBody, UnsecuredPlayerRequestDto.class);
+            PlayerCreationRequest playerCreationRequest =
+                    playerRequestMapper.toPlayerCreationRequest(unsecuredPlayerRequestDto);
 
             AuthenticationDto authenticatedPlayerDto = controller.registerUser(playerCreationRequest);
             resp.setStatus(HttpServletResponse.SC_OK);
