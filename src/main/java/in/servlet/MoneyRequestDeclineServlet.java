@@ -27,6 +27,10 @@ public class MoneyRequestDeclineServlet extends AbstractServiceServlet {
         controller = ApplicationControllerFactory.getInstance();
     }
 
+    public MoneyRequestDeclineServlet(ApplicationController controller) {
+        this.controller = controller;
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");

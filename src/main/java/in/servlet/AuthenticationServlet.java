@@ -17,7 +17,6 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +29,7 @@ public class AuthenticationServlet extends AbstractServiceServlet {
     private final ValidatingObjectMapper mapper;
 
     private final AuthenticationRequestMapper authenticationRequestMapper;
+
     @SneakyThrows
     public AuthenticationServlet() {
         controller = ApplicationControllerFactory.getInstance();

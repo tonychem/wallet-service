@@ -25,6 +25,10 @@ public class WalletBalanceServlet extends AbstractServiceServlet {
         controller = ApplicationControllerFactory.getInstance();
     }
 
+    public WalletBalanceServlet(ApplicationController controller) {
+        this.controller = controller;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");

@@ -28,6 +28,10 @@ public class WalletHistoryServlet extends AbstractServiceServlet {
         this.controller = ApplicationControllerFactory.getInstance();
     }
 
+    public WalletHistoryServlet(ApplicationController controller) {
+        this.controller = controller;
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
@@ -65,7 +69,12 @@ public class WalletHistoryServlet extends AbstractServiceServlet {
             return null;
         }
 
+        String queryParam = query.split("=")[0].toLowerCase();
         String actionInQuery = query.split("=")[1].toUpperCase();
+
+        if (!queryParam.equals("action")) {
+            throw new IllegalArgumentException("Невалидный параметр запроса");
+        }
 
         try {
             PlayerAction action = PlayerAction.valueOf(actionInQuery);

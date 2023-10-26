@@ -33,6 +33,7 @@
         <aspectj.version>1.9.19</aspectj.version>
         <plugin.aspectj.version>1.14.0</plugin.aspectj.version>
         <jetty-server.version>12.0.2</jetty-server.version>
+        <tomcat.version>11.0.0-M4</tomcat.version>
     </properties>
 
     <dependencies>
@@ -168,6 +169,12 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>${tomcat.version}</version>
         </dependency>
     </dependencies>
 

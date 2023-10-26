@@ -25,6 +25,10 @@ public class LogoutServlet extends AbstractServiceServlet {
         controller = ApplicationControllerFactory.getInstance();
     }
 
+    public LogoutServlet(ApplicationController controller) {
+        this.controller = controller;
+    }
+
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");

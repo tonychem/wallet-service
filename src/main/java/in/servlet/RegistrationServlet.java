@@ -33,6 +33,11 @@ public class RegistrationServlet extends AbstractServiceServlet {
         playerRequestMapper = PlayerRequestMapper.INSTANCE;
     }
 
+    public RegistrationServlet(ApplicationController controller) {
+        this.controller = controller;
+        playerRequestMapper = PlayerRequestMapper.INSTANCE;
+    }
+
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
