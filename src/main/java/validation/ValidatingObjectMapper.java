@@ -4,11 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import exception.ConstraintViolationException;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Custom Jackson Object Mapper, определяющий единственный метод - validateValue
@@ -25,11 +22,11 @@ public class ValidatingObjectMapper extends ObjectMapper {
     public <T> T validateValue(String content, Class<T> valueType)
             throws JsonProcessingException {
         T instance = super.readValue(content, valueType);
-        validate(instance, valueType);
+        validate(instance);
         return instance;
     }
 
-    private <T> boolean validate(T instance, Class<T> valueType) {
+    private <T> boolean validate(T instance) {
         Field[] fields = instance.getClass().getDeclaredFields();
 
         try {
@@ -91,18 +88,5 @@ public class ValidatingObjectMapper extends ObjectMapper {
         }
 
         return true;
-    }
-
-    private <T> Set<Field> findAnnotatedFields(T instance, Class<? extends Annotation> annotationType) {
-        Field[] fields = instance.getClass().getDeclaredFields();
-        Set<Field> annotatedFields = new HashSet<>();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(annotationType)) {
-                annotatedFields.add(field);
-            }
-        }
-
-        return annotatedFields;
     }
 }
