@@ -1,9 +1,9 @@
 package in.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import validation.NotEmpty;
 
 import java.util.Collection;
 

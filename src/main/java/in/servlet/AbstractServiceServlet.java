@@ -1,7 +1,7 @@
 package in.servlet;
 
 import application.model.dto.AuthenticationDto;
-import config.ValidatingObjectMapper;
+import validation.ValidatingObjectMapper;
 import exception.InvalidTokenException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
 package servlet;
 
 import application.ApplicationController;
-import config.ValidatingObjectMapper;
+import validation.ValidatingObjectMapper;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import org.apache.catalina.LifecycleException;

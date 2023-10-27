@@ -5,6 +5,7 @@ import application.ApplicationControllerFactory;
 import application.model.dto.AuthenticationDto;
 import domain.dto.PlayerCreationRequest;
 import exception.BadCredentialsException;
+import exception.ConstraintViolationException;
 import exception.dto.ExceptionDto;
 import in.dto.UnsecuredPlayerRequestDto;
 import in.mapper.PlayerRequestMapper;
@@ -12,7 +13,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 
 import java.io.IOException;

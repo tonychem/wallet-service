@@ -4,7 +4,8 @@ import application.ApplicationController;
 import application.ApplicationControllerFactory;
 import application.model.dto.AuthenticationDto;
 import application.model.dto.AuthenticationRequest;
-import config.ValidatingObjectMapper;
+import exception.ConstraintViolationException;
+import validation.ValidatingObjectMapper;
 import exception.BadCredentialsException;
 import exception.dto.ExceptionDto;
 import in.dto.UnsecuredAuthenticationRequestDto;
@@ -13,7 +14,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolationException;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
