@@ -1,8 +1,8 @@
 package repository.jdbcimpl;
 
+import domain.Player;
 import exception.NoSuchPlayerException;
 import exception.PlayerAlreadyExistsException;
-import domain.Player;
 import repository.PlayerCrudRepository;
 
 import java.math.BigDecimal;

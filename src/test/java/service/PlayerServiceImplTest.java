@@ -1,7 +1,5 @@
 package service;
 
-import exception.BadCredentialsException;
-import exception.DeficientBalanceException;
 import domain.Player;
 import domain.Transaction;
 import domain.TransferRequestStatus;
@@ -9,16 +7,14 @@ import domain.dto.AuthenticatedPlayerDto;
 import domain.dto.MoneyTransferRequest;
 import domain.dto.MoneyTransferResponse;
 import domain.dto.PlayerCreationRequest;
-import repository.PlayerCrudRepository;
-import repository.TransactionCrudRepository;
-import lombok.SneakyThrows;
+import exception.BadCredentialsException;
+import exception.DeficientBalanceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import service.PlayerService;
-import service.PlayerServiceImpl;
-import util.MigrationTool;
+import repository.PlayerCrudRepository;
+import repository.TransactionCrudRepository;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -45,9 +41,8 @@ class PlayerServiceImplTest {
     }
 
     @DisplayName("Authenticates player when credentials are correct")
-    @SneakyThrows
     @Test
-    void shouldAuthenticateWhenCredentialsAreCorrect() {
+    void shouldAuthenticateWhenCredentialsAreCorrect() throws Exception {
         byte[] password = MessageDigest.getInstance("MD5")
                 .digest("password".getBytes());
         Player admin = Player.builder()
@@ -67,9 +62,8 @@ class PlayerServiceImplTest {
     }
 
     @DisplayName("Throw error when player offers bad credentials")
-    @SneakyThrows
     @Test
-    void shouldThrowExceptionWhenBadCredentials() {
+    void shouldThrowExceptionWhenBadCredentials() throws Exception {
         byte[] password = MessageDigest.getInstance("MD5")
                 .digest("password".getBytes());
         Player admin = Player.builder()
@@ -88,9 +82,8 @@ class PlayerServiceImplTest {
     }
 
     @DisplayName("Should register new player when input data is correct")
-    @SneakyThrows
     @Test
-    void shouldRegisterNewPlayer() {
+    void shouldRegisterNewPlayer() throws Exception {
         Player newPlayer = Player.builder()
                 .login("admin")
                 .password("password".getBytes())

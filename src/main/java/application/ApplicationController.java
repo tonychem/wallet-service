@@ -1,19 +1,23 @@
 package application;
 
-import application.dto.AuthenticationDto;
-import application.dto.AuthenticationRequest;
-import application.dto.BalanceDto;
-import application.exception.UnauthorizedOperationException;
+import aop.annotations.Audit;
+import aop.annotations.Performance;
+import application.model.Authentication;
+import application.model.dto.AuthenticationDto;
+import application.model.dto.AuthenticationRequest;
+import application.model.dto.BalanceDto;
+import application.model.mapper.AuthenticationMapper;
 import domain.dto.*;
 import exception.BadCredentialsException;
+import exception.UnauthorizedOperationException;
 import service.PlayerAction;
 import service.PlayerService;
 import service.PlayerServiceImpl;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -22,19 +26,25 @@ import java.util.UUID;
  * предоставления идентификатора сессии. Чтобы получить идентификатор сессии необходимо зарегистрировать
  * нового пользователя или пройти авторизацию.
  */
+@Performance
+@Audit
 public class ApplicationController {
 
-    private final Set<UUID> authentications;
+    private final Map<UUID, String> authentications;
     private final PlayerService playerService;
+
+    private final AuthenticationMapper authenticationMapper;
 
     public ApplicationController() {
         this.playerService = new PlayerServiceImpl();
-        authentications = new HashSet<>();
+        this.authentications = new HashMap<>();
+        this.authenticationMapper = AuthenticationMapper.INSTANCE;
     }
 
-    public ApplicationController(Set<UUID> authentications, PlayerService playerService) {
+    public ApplicationController(Map<UUID, String> authentications, PlayerService playerService) {
         this.authentications = authentications;
         this.playerService = playerService;
+        this.authenticationMapper = AuthenticationMapper.INSTANCE;
     }
 
     /**
@@ -48,10 +58,9 @@ public class ApplicationController {
 
         Authentication authentication = new Authentication(authenticatedPlayerDto.getId(),
                 authenticatedPlayerDto.getLogin(), authenticatedPlayerDto.getUsername(), sessionId);
-        authentications.add(sessionId);
-        return new AuthenticationDto(authentication.getId(), authentication.getLogin(),
-                authentication.getUsername(),
-                authentication.getSessionID(), authenticatedPlayerDto.getBalance());
+
+        authentications.put(sessionId, authenticatedPlayerDto.getLogin());
+        return authenticationMapper.toAuthenticationDto(authentication, authenticatedPlayerDto.getBalance());
     }
 
     /**
@@ -60,15 +69,12 @@ public class ApplicationController {
      * @param request класс-обертка над пользовательскими секретами (логин, пароль)
      */
     public AuthenticationDto authenticate(AuthenticationRequest request) throws BadCredentialsException {
-        AuthenticatedPlayerDto authenticatedPlayerDto = playerService.authenticate(request.getLogin(),
-                request.getPassword());
+        AuthenticatedPlayerDto authenticatedPlayerDto = playerService.authenticate(request.getLogin(), request.getPassword());
         UUID sessionId = UUID.randomUUID();
 
-        authentications.add(sessionId);
+        authentications.put(sessionId, authenticatedPlayerDto.getLogin());
 
-        return new AuthenticationDto(authenticatedPlayerDto.getId(), authenticatedPlayerDto.getLogin(),
-                authenticatedPlayerDto.getUsername(),
-                sessionId, authenticatedPlayerDto.getBalance());
+        return authenticationMapper.toAuthenticationDto(sessionId, authenticatedPlayerDto);
     }
 
     /**
@@ -80,9 +86,9 @@ public class ApplicationController {
      * @throws UnauthorizedOperationException
      */
     public BalanceDto getBalance(Long id, UUID sessionId) throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
         AuthenticatedPlayerDto playerDto = playerService.getBalance(id);
-        return new BalanceDto(playerDto.getId(), playerDto.getUsername(), playerDto.getBalance());
+        return authenticationMapper.toBalanceDto(playerDto);
     }
 
     /**
@@ -95,17 +101,12 @@ public class ApplicationController {
      * @param transactionId идентификатор транзакции
      * @return остаток на балансе после перевода
      */
-    public BalanceDto transferMoney(String sender, String recipient, BigDecimal amount, UUID sessionId,
-                                    UUID transactionId)
-            throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+    public BalanceDto transferMoney(String sender, String recipient, BigDecimal amount, UUID sessionId, UUID transactionId) throws UnauthorizedOperationException {
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
 
-        MoneyTransferResponse response = playerService.transferMoneyTo(new MoneyTransferRequest(
-                transactionId, sender, recipient, amount
-        ));
+        MoneyTransferResponse response = playerService.transferMoneyTo(new MoneyTransferRequest(transactionId, sender, recipient, amount));
 
-        return new BalanceDto(response.getRequester().getId(), response.getRequester().getUsername(),
-                response.getRequester().getBalance());
+        return new BalanceDto(response.getRequester().getId(), response.getRequester().getUsername(), response.getRequester().getBalance());
     }
 
     /**
@@ -117,13 +118,10 @@ public class ApplicationController {
      * @param sessionId     идентификатор сессии
      * @param transactionId идентификатор транзакции
      */
-    public boolean requestMoneyFrom(String requester, String donor, BigDecimal amount, UUID sessionId,
-                                    UUID transactionId) throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+    public boolean requestMoneyFrom(String requester, String donor, BigDecimal amount, UUID sessionId, UUID transactionId) throws UnauthorizedOperationException {
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
 
-        MoneyTransferResponse response = playerService.requestMoneyFrom(new MoneyTransferRequest(
-                transactionId, donor, requester, amount
-        ));
+        MoneyTransferResponse response = playerService.requestMoneyFrom(new MoneyTransferRequest(transactionId, donor, requester, amount));
 
         return response != null;
     }
@@ -134,9 +132,8 @@ public class ApplicationController {
      * @param login     логин пользователя
      * @param sessionId идентификтор сессии
      */
-    public Collection<MoneyTransferRequest> getPendingMoneyRequests(String login, UUID sessionId)
-            throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+    public Collection<MoneyTransferRequest> getPendingMoneyRequests(String login, UUID sessionId) throws UnauthorizedOperationException {
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
 
         return playerService.getPendingMoneyRequests(login);
     }
@@ -148,9 +145,8 @@ public class ApplicationController {
      * @param action    действие (кредит, дебит)
      * @param sessionId идентификатор сессии
      */
-    public Collection<TransactionDto> getHistory(String login, PlayerAction action, UUID sessionId)
-            throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+    public Collection<TransactionDto> getHistory(String login, PlayerAction action, UUID sessionId) throws UnauthorizedOperationException {
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
         Collection<TransactionDto> history = playerService.getHistory(login, action);
         return history;
     }
@@ -162,11 +158,8 @@ public class ApplicationController {
      * @param donorUsername никнейм пользователя, со счета которого будут списаны деньги
      * @param transactionId идентификатор транзакции
      */
-    public MoneyTransferResponse approvePendingRequest(UUID sessionId,
-                                                       String donorUsername,
-                                                       UUID transactionId)
-            throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+    public MoneyTransferResponse approvePendingRequest(UUID sessionId, String donorUsername, UUID transactionId) throws UnauthorizedOperationException {
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
         return playerService.approvePendingMoneyRequest(donorUsername, transactionId);
     }
 
@@ -177,9 +170,8 @@ public class ApplicationController {
      * @param donorUsername никнейм пользователя, на счет которого поступил запрос
      * @param transactionId идентификатор транзакции
      */
-    public void declinePendingRequest(UUID sessionId, String donorUsername, UUID transactionId)
-            throws UnauthorizedOperationException {
-        if (!authentications.contains(sessionId)) throw new UnauthorizedOperationException("Unauthorized access");
+    public void declinePendingRequest(UUID sessionId, String donorUsername, UUID transactionId) throws UnauthorizedOperationException {
+        if (authentications.get(sessionId) == null) throw new UnauthorizedOperationException("Unauthorized access");
         playerService.declinePendingRequest(donorUsername, transactionId);
     }
 
