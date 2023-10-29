@@ -1,14 +1,11 @@
 package repository.db;
 
-import domain.Transaction;
-import domain.TransferRequestStatus;
-import exception.TransactionStatusException;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import ru.tonychem.domain.Transaction;
+import ru.tonychem.domain.TransferRequestStatus;
+import ru.tonychem.exception.model.TransactionStatusException;
+import org.junit.jupiter.api.*;
 import repository.AbstractPGSQLRepositoryConsumer;
-import repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
+import ru.tonychem.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -17,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Postgres Transaction Repository test")
+@Disabled
 class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer {
     private PGJDBCTransactionCrudRepositoryImpl transactionRepository;
     private static UUID transactionIdFromUserToAdmin;

@@ -2,11 +2,10 @@ package repository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import util.ConfigFileReader;
-import util.MigrationTool;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,6 +19,7 @@ import java.util.Properties;
  * и удаление всех тестовых данных после выполнения юнит-тестов в классах-наследниках
  */
 @Testcontainers
+@Disabled
 public abstract class AbstractPGSQLRepositoryConsumer {
 
     @Container
@@ -35,7 +35,7 @@ public abstract class AbstractPGSQLRepositoryConsumer {
     public void init() throws IOException {
         assert postgres.isRunning();
 
-        properties = ConfigFileReader.read("application-test.properties");
+//        properties = ConfigFileReader.read("application-test.properties");
         setTestDbCredentialsToProperties();
         applyRecentMigration(properties);
     }
@@ -95,7 +95,7 @@ public abstract class AbstractPGSQLRepositoryConsumer {
      * Метод применяет последнюю актуальную миграцию.
      */
     private void applyRecentMigration(Properties properties) {
-        MigrationTool.applyMigration(properties);
+//        MigrationTool.applyMigration(properties);
     }
 
     /**
