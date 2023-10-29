@@ -1,5 +1,9 @@
 package service;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import ru.tonychem.domain.Player;
 import ru.tonychem.domain.Transaction;
 import ru.tonychem.domain.TransferRequestStatus;
@@ -7,16 +11,14 @@ import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
 import ru.tonychem.domain.dto.MoneyTransferRequest;
 import ru.tonychem.domain.dto.MoneyTransferResponse;
 import ru.tonychem.domain.dto.PlayerCreationRequest;
+import ru.tonychem.domain.mapper.PlayerMapper;
+import ru.tonychem.domain.mapper.TransactionMapper;
 import ru.tonychem.exception.model.BadCredentialsException;
 import ru.tonychem.exception.model.DeficientBalanceException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import ru.tonychem.repository.PlayerCrudRepository;
 import ru.tonychem.repository.TransactionCrudRepository;
 import ru.tonychem.service.PlayerService;
+import ru.tonychem.service.PlayerServiceImpl;
 
 import java.math.BigDecimal;
 import java.security.MessageDigest;
@@ -29,18 +31,21 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Player service test")
-@Disabled
 class PlayerServiceImplTest {
 
     private PlayerService playerService;
     private PlayerCrudRepository mockPlayerCrudRepository;
     private TransactionCrudRepository mockTransactionCrudRepository;
 
+    private static PlayerMapper playerMapper = PlayerMapper.INSTANCE;
+    private static TransactionMapper transactionMapper = TransactionMapper.INSTANCE;
+
     @BeforeEach
     public void init() {
         mockPlayerCrudRepository = Mockito.mock(PlayerCrudRepository.class);
         mockTransactionCrudRepository = Mockito.mock(TransactionCrudRepository.class);
-//        playerService = new PlayerServiceImpl(mockPlayerCrudRepository, mockTransactionCrudRepository);
+        playerService = new PlayerServiceImpl(mockPlayerCrudRepository, mockTransactionCrudRepository, playerMapper,
+                transactionMapper);
     }
 
     @DisplayName("Authenticates player when credentials are correct")

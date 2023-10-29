@@ -1,52 +1,76 @@
 package repository;
 
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import configuration.TestConfiguration;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 /**
  * Абстрактный класс, обязанностью которого является создание тест-контейнера, инициализации таблиц средствами миграции
  * и удаление всех тестовых данных после выполнения юнит-тестов в классах-наследниках
  */
 @Testcontainers
-@Disabled
+@ContextConfiguration(classes = TestConfiguration.class)
+@ExtendWith(SpringExtension.class)
 public abstract class AbstractPGSQLRepositoryConsumer {
+
+    @Value("${liquibase.changeLogFile}")
+    private String changelogFile;
+
+    @Value("${schema.domain.name}")
+    protected String businessSchema;
+
+    @Value("${liquibase.schema}")
+    private String liquibaseSchema;
 
     @Container
     protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
-
-    protected Properties properties;
 
     /**
      * Метод подготоваливает БД для тестирования: создает схемы и применяет актуальную миграцию
      * Тестовой схемой для таблиц liquibase и бизнес-моделей является public
      */
     @BeforeEach
-    public void init() throws IOException {
-        assert postgres.isRunning();
+    public void applyMigration() {
+        try (Connection connection = DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(),
+                postgres.getPassword())) {
 
-//        properties = ConfigFileReader.read("application-test.properties");
-        setTestDbCredentialsToProperties();
-        applyRecentMigration(properties);
+            Database database = DatabaseFactory.getInstance()
+                    .findCorrectDatabaseImplementation(new JdbcConnection(connection));
+            Liquibase liquibase = new Liquibase(changelogFile,
+                    new ClassLoaderResourceAccessor(), database);
+
+            database.setDefaultSchemaName(businessSchema);
+            database.setLiquibaseSchemaName(liquibaseSchema);
+            liquibase.update();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    /**
+     * Метод уничтожает пользовательские и системные таблицы liquibase
+     */
     @AfterEach
-    public void destruct() {
-        String url = postgres.getJdbcUrl();
-        String username = postgres.getUsername();
-        String password = postgres.getPassword();
-
-        try (Connection connection = DriverManager.getConnection(url, username, password);
+    public void dropTables() {
+        try (Connection connection = DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(),
+                postgres.getPassword());
              Statement statement = connection.createStatement()) {
             dropCustomTables(statement);
             dropLiquibaseTables(statement);
@@ -89,29 +113,5 @@ public abstract class AbstractPGSQLRepositoryConsumer {
         statement.execute(dropPlayerSequenceQuery);
         statement.execute(dropTransactionQuery);
         statement.execute(dropLogsTableQuery);
-    }
-
-    /**
-     * Метод применяет последнюю актуальную миграцию.
-     */
-    private void applyRecentMigration(Properties properties) {
-//        MigrationTool.applyMigration(properties);
-    }
-
-    /**
-     * Выставляет url, username и password тестовой БД для объекта properties.
-     * Тестовой схемой для таблиц liquibase и бизнес-моделей является public
-     */
-    private void setTestDbCredentialsToProperties() {
-        String url = postgres.getJdbcUrl();
-        String username = postgres.getUsername();
-        String password = postgres.getPassword();
-
-        properties.setProperty("jdbc.url", url);
-        properties.setProperty("jdbc.username", username);
-        properties.setProperty("jdbc.password", password);
-
-        properties.setProperty("domain.schema.name", "public");
-        properties.setProperty("liquibase.schema.name", "public");
     }
 }

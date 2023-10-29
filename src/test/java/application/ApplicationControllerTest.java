@@ -1,25 +1,23 @@
 package application;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import repository.AbstractPGSQLRepositoryConsumer;
 import ru.tonychem.application.ApplicationController;
 import ru.tonychem.application.model.dto.AuthenticationDto;
 import ru.tonychem.application.model.dto.AuthenticationRequest;
 import ru.tonychem.application.model.dto.BalanceDto;
+import ru.tonychem.application.model.mapper.AuthenticationMapper;
 import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
 import ru.tonychem.domain.dto.PlayerCreationRequest;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import repository.AbstractPGSQLRepositoryConsumer;
 import ru.tonychem.service.PlayerService;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,24 +27,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Application level test class")
-@Testcontainers
-@Disabled
 class ApplicationControllerTest extends AbstractPGSQLRepositoryConsumer {
     private PlayerService mockPlayerService;
     private HashMap<UUID, String> authorizations;
     private ApplicationController controller;
 
+    private static AuthenticationMapper authenticationMapper = AuthenticationMapper.INSTANCE;
+
     @BeforeEach
     public void init() throws IOException {
-        super.init();
-        initiateLogger(properties);
         mockPlayerService = Mockito.mock(PlayerService.class);
         authorizations = new HashMap<>();
-//        controller = new ApplicationController(authorizations, mockPlayerService);
-    }
-
-    private void initiateLogger(Properties properties) {
-//        LoggerFactory.getLogger(properties);
+        controller = new ApplicationController(mockPlayerService, authenticationMapper, authorizations);
     }
 
     @DisplayName("Should return player data when registering new player")

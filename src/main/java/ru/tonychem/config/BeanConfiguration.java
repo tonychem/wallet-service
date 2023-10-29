@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ru.tonychem.aop.ControllerAuditAspect;
 import ru.tonychem.application.ApplicationController;
@@ -53,6 +52,9 @@ public class BeanConfiguration {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    /**
+     * Конфигурация объекта для считывания свйоств из внешнего yaml - файла
+     */
     @Bean
     public static PropertySourcesPlaceholderConfigurer properties() {
         PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
@@ -116,11 +118,6 @@ public class BeanConfiguration {
         liquibase.setChangeLog(liquibaseChangeLogFilePath);
         liquibase.setDataSource(pgsqlDataSource());
         return liquibase;
-    }
-
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(pgsqlDataSource());
     }
 
     @Bean

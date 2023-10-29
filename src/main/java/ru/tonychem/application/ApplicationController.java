@@ -1,5 +1,6 @@
 package ru.tonychem.application;
 
+import org.springframework.stereotype.Service;
 import ru.tonychem.aop.annotations.Audit;
 import ru.tonychem.aop.annotations.Performance;
 import ru.tonychem.application.model.Authentication;
@@ -7,11 +8,9 @@ import ru.tonychem.application.model.dto.AuthenticationDto;
 import ru.tonychem.application.model.dto.AuthenticationRequest;
 import ru.tonychem.application.model.dto.BalanceDto;
 import ru.tonychem.application.model.mapper.AuthenticationMapper;
+import ru.tonychem.domain.dto.*;
 import ru.tonychem.exception.model.BadCredentialsException;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.tonychem.domain.dto.*;
 import ru.tonychem.service.PlayerAction;
 import ru.tonychem.service.PlayerService;
 
@@ -30,15 +29,25 @@ import java.util.UUID;
 @Performance
 @Audit
 @Service
-@RequiredArgsConstructor
 public class ApplicationController {
 
     private final PlayerService playerService;
 
     private final AuthenticationMapper authenticationMapper;
 
-    private Map<UUID, String> authentications = new HashMap<>();
+    private Map<UUID, String> authentications;
 
+    public ApplicationController(PlayerService playerService, AuthenticationMapper authenticationMapper) {
+        this.playerService = playerService;
+        this.authenticationMapper = authenticationMapper;
+        authentications = new HashMap<>();
+    }
+
+    public ApplicationController(PlayerService playerService, AuthenticationMapper authenticationMapper, Map<UUID, String> authentications) {
+        this.playerService = playerService;
+        this.authenticationMapper = authenticationMapper;
+        this.authentications = authentications;
+    }
 
     /**
      * Регистрация пользователя. Метод автоматически сохраняет в множество текущих сессий зарегистрированного пользователя.
