@@ -1,7 +1,7 @@
 package ru.tonychem.in.mapper;
 
 import ru.tonychem.domain.dto.PlayerCreationRequest;
-import ru.tonychem.in.dto.UnsecuredPlayerRequestDto;
+import ru.tonychem.in.dto.UnsecuredPlayerCreationRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -14,5 +14,5 @@ public interface PlayerRequestMapper extends Encodable {
     @Mapping(source = "login", target = "login")
     @Mapping(source = "username", target = "username")
     @Mapping(source = "password", target = "password", qualifiedByName = "encodePassword")
-    PlayerCreationRequest toPlayerCreationRequest(UnsecuredPlayerRequestDto unsecuredPlayerRequestDto);
+    PlayerCreationRequest toPlayerCreationRequest(UnsecuredPlayerCreationRequestDto unsecuredPlayerCreationRequestDto);
 }

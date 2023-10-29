@@ -1,11 +1,5 @@
 package ru.tonychem.in.controller;
 
-import ru.tonychem.application.ApplicationController;
-import ru.tonychem.application.model.dto.AuthenticationDto;
-import ru.tonychem.application.model.dto.AuthenticationRequest;
-import ru.tonychem.exception.model.BadCredentialsException;
-import ru.tonychem.in.dto.UnsecuredAuthenticationRequestDto;
-import ru.tonychem.in.mapper.AuthenticationRequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +7,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tonychem.aop.annotations.validation.Validated;
+import ru.tonychem.application.ApplicationController;
+import ru.tonychem.application.model.dto.AuthenticationDto;
+import ru.tonychem.application.model.dto.AuthenticationRequest;
+import ru.tonychem.exception.model.BadCredentialsException;
+import ru.tonychem.in.dto.UnsecuredAuthenticationRequestDto;
+import ru.tonychem.in.mapper.AuthenticationRequestMapper;
 
 @RestController
 @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE,

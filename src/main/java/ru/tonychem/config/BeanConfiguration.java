@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ru.tonychem.aop.ControllerAuditAspect;
 import ru.tonychem.aop.PerformanceAspect;
+import ru.tonychem.aop.ValidationAspect;
 import ru.tonychem.application.ApplicationController;
 import ru.tonychem.application.model.mapper.AuthenticationMapper;
 import ru.tonychem.domain.mapper.PlayerMapper;
@@ -137,6 +138,12 @@ public class BeanConfiguration {
     public ControllerAuditAspect controllerAuditAspect() {
         ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
         aspect.setLogger(logger());
+        return aspect;
+    }
+
+    @Bean
+    public ValidationAspect validationAspect() {
+        ValidationAspect aspect = Aspects.aspectOf(ValidationAspect.class);
         return aspect;
     }
 

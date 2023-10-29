@@ -1,10 +1,10 @@
 package ru.tonychem.exception;
 
-import ru.tonychem.exception.model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.tonychem.exception.model.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,8 +18,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiException(exception.getMessage()), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = {BadCredentialsException.class, ConstraintViolationException.class,
-            DeficientBalanceException.class})
+    @ExceptionHandler(value = {BadCredentialsException.class, DeficientBalanceException.class,
+            ConstraintViolationException.class})
     public ResponseEntity<ApiException> handleInvalidUserRequests(RuntimeException exception) {
         return new ResponseEntity<>(new ApiException(exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
@@ -28,6 +28,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiException> handleUnauthorizedOperations(RuntimeException exception) {
         return new ResponseEntity<>(new ApiException(exception.getMessage()), HttpStatus.FORBIDDEN);
     }
-
-
 }

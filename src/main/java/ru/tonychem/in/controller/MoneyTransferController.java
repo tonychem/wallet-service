@@ -1,12 +1,12 @@
 package ru.tonychem.in.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.tonychem.application.ApplicationController;
 import ru.tonychem.application.model.dto.BalanceDto;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
 import ru.tonychem.in.dto.PlayerTransferMoneyRequestDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import ru.tonychem.util.JwtUtils;
 
 import java.math.BigDecimal;

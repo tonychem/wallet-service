@@ -17,6 +17,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()
                 .indentOutput(true);
+
         converters.add(new MappingJackson2HttpMessageConverter(builder.build()));
     }
 }
