@@ -13,7 +13,8 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * Фильтр, ответственный за валидацию JWT в запросе.
+ * Фильтр, ответственный за валидацию JWT в запросе. Пути запросов, указанные в множестве jwtIndependentRequestMappings,
+ * игнорируются. Осталльные - фильтруются с проверкой наличия заголовка Authorization в запросе и валидности токена.
  */
 public class JwtTokenFilter implements Filter {
 

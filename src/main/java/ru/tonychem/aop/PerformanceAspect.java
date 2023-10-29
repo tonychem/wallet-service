@@ -6,6 +6,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
+/**
+ * Аспект, ответственный за замер времени исполнения методов контроллера. Вывод - в консоль.
+ */
 @Aspect
 @Component
 public class PerformanceAspect {

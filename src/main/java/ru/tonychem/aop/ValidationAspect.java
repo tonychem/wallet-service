@@ -13,6 +13,9 @@ import ru.tonychem.aop.annotations.validation.NotNull;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
+/**
+ * Аспект, ответственный за валидацию сущностей в контроллерах, приходящих от клиента
+ */
 @Aspect
 @Component
 public class ValidationAspect {

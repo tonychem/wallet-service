@@ -18,7 +18,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.UUID;
 
-
+/**
+ * Аспект, ответственный за логгирование всех методово контроллера
+ */
 @Aspect
 @Component
 @Setter

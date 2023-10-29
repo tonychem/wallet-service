@@ -12,7 +12,6 @@ import java.util.List;
 @EnableWebMvc
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
-
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder()

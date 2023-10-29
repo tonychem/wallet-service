@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.tonychem.exception.model.*;
 
+/**
+ * Класс, ответственный за глобальную обработку ошибок приложения.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = {NoSuchPlayerException.class, NoSuchTransactionException.class})
