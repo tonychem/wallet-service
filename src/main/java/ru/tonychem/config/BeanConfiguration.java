@@ -6,13 +6,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ru.tonychem.aop.ControllerAuditAspect;
-import ru.tonychem.aop.PerformanceAspect;
-import ru.tonychem.aop.ValidationAspect;
 import ru.tonychem.application.ApplicationController;
 import ru.tonychem.application.model.mapper.AuthenticationMapper;
 import ru.tonychem.domain.mapper.PlayerMapper;
@@ -30,6 +29,7 @@ import ru.tonychem.util.JwtUtils;
 import javax.sql.DataSource;
 
 @Configuration
+@EnableAspectJAutoProxy
 public class BeanConfiguration {
 
     @Value("${spring.datasource.url}")
@@ -129,21 +129,9 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public PerformanceAspect performanceAspect() {
-        PerformanceAspect aspect = Aspects.aspectOf(PerformanceAspect.class);
-        return aspect;
-    }
-
-    @Bean
     public ControllerAuditAspect controllerAuditAspect() {
         ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
         aspect.setLogger(logger());
-        return aspect;
-    }
-
-    @Bean
-    public ValidationAspect validationAspect() {
-        ValidationAspect aspect = Aspects.aspectOf(ValidationAspect.class);
         return aspect;
     }
 

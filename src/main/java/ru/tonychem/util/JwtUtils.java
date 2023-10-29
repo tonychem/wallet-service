@@ -18,8 +18,6 @@ import java.util.function.Function;
  */
 @Component
 public class JwtUtils {
-
-    @Value("${jwt.secret}")
     private static String secret;
 
     public static <T> T extractClaim(String token, Function<Claims, T> mapper) {
