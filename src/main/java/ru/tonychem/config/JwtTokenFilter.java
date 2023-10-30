@@ -44,6 +44,7 @@ public class JwtTokenFilter implements Filter {
         } catch (Exception e) {
             ApiException apiException = new ApiException(e.getMessage());
             resp.getOutputStream().write(mapper.writeValueAsBytes(apiException));
+            resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 

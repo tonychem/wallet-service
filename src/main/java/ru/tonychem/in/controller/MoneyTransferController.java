@@ -16,6 +16,7 @@ import java.util.UUID;
 @RequestMapping(value = "/player-management/money-transfer")
 @RequiredArgsConstructor
 public class MoneyTransferController {
+
     private final ApplicationController controller;
 
     @PostMapping

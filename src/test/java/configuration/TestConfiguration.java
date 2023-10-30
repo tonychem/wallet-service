@@ -12,12 +12,16 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import ru.tonychem.aop.ControllerAuditAspect;
 import ru.tonychem.logging.Logger;
 import ru.tonychem.logging.PGSQLLoggerImpl;
+import ru.tonychem.util.JwtUtils;
 
 @Configuration
 @EnableAspectJAutoProxy
 public class TestConfiguration {
     @Value("${schema.domain.name}")
     private String schema;
+
+    @Value("${jwt.secret}")
+    private String secret;
 
     /**
      * Конфигурация объекта для чтения из внешнего yaml-файла
@@ -52,5 +56,10 @@ public class TestConfiguration {
         ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
         aspect.setLogger(logger());
         return aspect;
+    }
+
+    @Bean
+    public void configureJwtUtils() {
+        JwtUtils.setSecret(secret);
     }
 }

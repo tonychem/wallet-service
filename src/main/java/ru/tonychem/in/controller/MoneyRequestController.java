@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tonychem.application.ApplicationController;
+import ru.tonychem.domain.dto.MoneyTransferRequest;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
 import ru.tonychem.in.dto.PlayerRequestMoneyDto;
 import ru.tonychem.in.dto.TransactionsListDto;
@@ -22,6 +23,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MoneyRequestController {
     private final ApplicationController controller;
+
+    @GetMapping
+    public ResponseEntity<Collection<MoneyTransferRequest>> getPendingMoneyRequests(@RequestHeader("Authorization") String authToken)
+            throws UnauthorizedOperationException {
+        String jwt = authToken.substring(7);
+        String login = (String) JwtUtils.extractClaim(jwt, claims -> claims.get("login"));
+        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
+
+        Collection<MoneyTransferRequest> moneyTransferRequests = controller.getPendingMoneyRequests(login, sessionId);
+
+        return ResponseEntity.ok(moneyTransferRequests);
+    }
 
     @PostMapping
     public ResponseEntity<?> requestMoney(@RequestHeader("Authorization") String authToken,

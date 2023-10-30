@@ -80,7 +80,9 @@ public class ValidationAspect {
         Object value = field.get(instance);
 
         if (value != null) {
-            if (value instanceof Collection s && s.isEmpty()) {
+            if (value instanceof Collection c && c.isEmpty()) {
+                throw new ConstraintViolationException(field.getName() + " is empty!");
+            } else if (value instanceof String s && s.isEmpty()) {
                 throw new ConstraintViolationException(field.getName() + " is empty!");
             }
         } else {
