@@ -9,19 +9,10 @@ Wallet-service
 4. Просмотр истории пополнений/списаний.
 
 Взаимодействие с пользователем происходит через REST API. Для целей тестирования к моменту первого запуска в БД 
-содержится два пользователя: admin(login=admin, pwd=admin) и user(login=user, pwd=user).
+находится два пользователя: admin(login=admin, pwd=admin) и user(login=user, pwd=user).
 
-Список endpoint-ов:
-1. POST /registration - зарегистрировать игрока
-2. POST /login - зайти в приложение
-3. DELETE /logout - выйти из приложения
-4. GET /player-management/wallet/balance - получить баланс пользователя
-5. GET /player-management/wallet/history - получить историю транзакций пользователя
-6. POST /player-management/money-transfer - отправить деньги другому игроку
-7. POST /player-management/money-request - отправить запрос на получение денег от другого игрока
-8. GET /player-management/money-request - получить список всех неодобреных заявок на перевод средств другим игрокам
-9. POST /player-management/money-request/approve - подтвердить заявки на перевод денежных средств
-10. POST /player-management/money-request/decline - отклонить заявки на перевод денежных средств
+Описание эндпоинтов доступно в Swagger-UI после запуска приложения по запросу на эндпоинт: /swagger-ui.html 
+
 ----
 Под капотом на уровне приложения создан примитивный механизм безопасности посредством создания сессий: 
 каждый клиент после авторизации/регистрации получает UUID токен, который должен быть предоставлен контроллеру
@@ -34,7 +25,7 @@ Wallet-service
 Для запуска приложения:
 1. Клонировать проект 
 ```shell
-git clone --branch hw2 https://github.com/tonychem/wallet-service.git
+git clone --branch hw4 https://github.com/tonychem/wallet-service.git
 ```
 2. Перейти в папку проекта *wallet-service* в командной строке и собрать проект локально, используя Maven:
 ```shell
