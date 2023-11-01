@@ -23,16 +23,19 @@
         <postgresql.version>42.6.0</postgresql.version>
         <liquibase.version>4.24.0</liquibase.version>
         <testcontainers.version>1.19.0</testcontainers.version>
-        <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
         <jackson.version>2.15.3</jackson.version>
         <jjwt.version>0.11.2</jjwt.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <aspectj.version>1.9.19</aspectj.version>
         <plugin.aspectj.version>1.14.0</plugin.aspectj.version>
-        <spring-framework.version>6.0.13</spring-framework.version>
-        <spring-data.version>3.1.5</spring-data.version>
         <json-path.version>2.8.0</json-path.version>
+        <swagger.version>2.9.2</swagger.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
+        <javax.annotation.version>1.3.2</javax.annotation.version>
+        <spring-framework.version>5.3.20</spring-framework.version>
+        <spring-data.version>3.1.5</spring-data.version>
+        <snakeyaml.version>1.30</snakeyaml.version>
     </properties>
 
     <dependencies>
@@ -102,12 +105,6 @@
             <artifactId>postgresql</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>${jakarta.servlet.version}</version>
         </dependency>
 
         <dependency>
@@ -200,6 +197,31 @@
             <artifactId>json-path</artifactId>
             <version>${json-path.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
         </dependency>
     </dependencies>
 

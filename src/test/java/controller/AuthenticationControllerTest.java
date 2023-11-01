@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.tonychem.application.ApplicationController;
 import ru.tonychem.application.model.dto.AuthenticationDto;
 import ru.tonychem.application.model.dto.AuthenticationRequest;
-import ru.tonychem.config.JwtTokenFilter;
 import ru.tonychem.exception.GlobalExceptionHandler;
 import ru.tonychem.in.controller.AuthenticationController;
 import ru.tonychem.in.dto.UnsecuredAuthenticationRequestDto;
@@ -45,7 +44,6 @@ public class AuthenticationControllerTest {
         mvc = MockMvcBuilders
                 .standaloneSetup(new AuthenticationController(mockApplicationController, authenticationMapper))
                 .setControllerAdvice(new GlobalExceptionHandler())
-                .addFilters(new JwtTokenFilter(objectMapper))
                 .build();
     }
 

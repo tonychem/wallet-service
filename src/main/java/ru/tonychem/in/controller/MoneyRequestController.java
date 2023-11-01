@@ -1,5 +1,9 @@
 package ru.tonychem.in.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@Api(description = "Взаимодействие с денежными запросами")
 @RestController
 @RequestMapping(value = "/player-management/money-request", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -24,6 +29,11 @@ import java.util.UUID;
 public class MoneyRequestController {
     private final ApplicationController controller;
 
+    @ApiOperation("Получение списка неподтвержденных денежных запросов")
+    @ApiResponses(
+            {@ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+    )
     @GetMapping
     public ResponseEntity<Collection<MoneyTransferRequest>> getPendingMoneyRequests(@RequestHeader("Authorization") String authToken)
             throws UnauthorizedOperationException {
@@ -36,6 +46,12 @@ public class MoneyRequestController {
         return ResponseEntity.ok(moneyTransferRequests);
     }
 
+    @ApiOperation("Публикация запроса на получение денежных средств")
+    @ApiResponses(
+            {@ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 400, message = "Ошибка валидации полей JSON объекта"),
+                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+    )
     @PostMapping
     public ResponseEntity<?> requestMoney(@RequestHeader("Authorization") String authToken,
                                           @RequestBody PlayerRequestMoneyDto moneyRequestDto) throws UnauthorizedOperationException {
@@ -49,6 +65,11 @@ public class MoneyRequestController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiOperation("Подтверждение входящих запросов на отправку денежных средств")
+    @ApiResponses(
+            {@ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+    )
     @PostMapping("/approve")
     public ResponseEntity<?> approvePendingMoneyRequests(@RequestHeader("Authorization") String authToken,
                                                          @RequestBody TransactionsListDto transactions)
@@ -65,6 +86,11 @@ public class MoneyRequestController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiOperation("Отклонение входящих запросов на отправку денежных средств")
+    @ApiResponses(
+            {@ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+    )
     @PostMapping("/decline")
     public ResponseEntity<?> declinePendingMoneyRequests(@RequestHeader("Authorization") String authToken,
                                                          @RequestBody TransactionsListDto transactions)

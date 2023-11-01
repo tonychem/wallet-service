@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.tonychem.application.ApplicationController;
 import ru.tonychem.application.model.dto.AuthenticationDto;
-import ru.tonychem.config.JwtTokenFilter;
 import ru.tonychem.domain.dto.PlayerCreationRequest;
 import ru.tonychem.exception.GlobalExceptionHandler;
 import ru.tonychem.in.controller.RegistrationController;
@@ -45,7 +44,6 @@ public class RegistrationControllerTest {
         mvc = MockMvcBuilders
                 .standaloneSetup(new RegistrationController(mockApplicationController, playerRequestMapper))
                 .setControllerAdvice(new GlobalExceptionHandler())
-                .addFilters(new JwtTokenFilter(objectMapper))
                 .build();
     }
 
