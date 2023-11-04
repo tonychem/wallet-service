@@ -167,17 +167,23 @@ public class PlayerServiceImpl implements PlayerService {
     public Collection<TransactionDto> getHistory(String login, PlayerAction action) {
         Collection<Transaction> transactionsByUser;
 
+        if (action == null) {
+            transactionsByUser = transactionRepository
+                    .getTransactionsBySenderAndRecipientAndStatus(login, null, null);
+            transactionsByUser.addAll(transactionRepository
+                    .getTransactionsBySenderAndRecipientAndStatus(null, login, null));
+
+            return transactionsByUser.stream()
+                    .map(transactionMapper::toTransactionDto)
+                    .collect(Collectors.toList());
+        }
+
         switch (action) {
             case DEBIT -> transactionsByUser = transactionRepository
                     .getTransactionsBySenderAndRecipientAndStatus(login, null, null);
             case CREDIT -> transactionsByUser = transactionRepository
                     .getTransactionsBySenderAndRecipientAndStatus(null, login, null);
-            default -> {
-                transactionsByUser = transactionRepository
-                        .getTransactionsBySenderAndRecipientAndStatus(login, null, null);
-                transactionsByUser.addAll(transactionRepository
-                        .getTransactionsBySenderAndRecipientAndStatus(null, login, null));
-            }
+            default -> throw new RuntimeException("Unknown exception while getting history");
         }
 
         return transactionsByUser.stream()

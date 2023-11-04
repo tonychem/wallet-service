@@ -8,10 +8,13 @@ import ru.tonychem.repository.TransactionCrudRepository;
 import ru.tonychem.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 import ru.tonychem.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 import ru.tonychem.service.PlayerService;
+import ru.tonychem.service.PlayerSessionService;
 import ru.tonychem.service.impl.PlayerServiceImpl;
+import ru.tonychem.service.impl.PlayerSessionServiceImpl;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 @Configuration
 public class BeanConfiguration {
@@ -41,6 +44,11 @@ public class BeanConfiguration {
     @Bean
     public MessageDigest messageDigest() throws NoSuchAlgorithmException {
         return MessageDigest.getInstance("MD5");
+    }
+
+    @Bean
+    public PlayerSessionService playerSessionService() {
+        return new PlayerSessionServiceImpl(new HashMap<>());
     }
 
     @Bean

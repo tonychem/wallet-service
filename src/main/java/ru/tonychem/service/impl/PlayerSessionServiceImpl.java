@@ -1,17 +1,18 @@
 package ru.tonychem.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
 import ru.tonychem.service.PlayerSessionService;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PlayerSessionServiceImpl implements PlayerSessionService {
-    private Map<UUID, AuthenticatedPlayerDto> authentications = new HashMap<>();
+    private final Map<UUID, AuthenticatedPlayerDto> authentications;
 
     @Override
     public boolean exists(UUID id) throws UnauthorizedOperationException {

@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Postgres Transaction Repository test")
-@Disabled
 class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer {
     private PGJDBCTransactionCrudRepositoryImpl transactionRepository;
     private static UUID transactionIdFromUserToAdmin;

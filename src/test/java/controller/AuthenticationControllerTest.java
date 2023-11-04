@@ -3,7 +3,6 @@ package controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configuration.TestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ContextConfiguration(classes = TestConfiguration.class)
 @ExtendWith(SpringExtension.class)
-@Disabled
 public class AuthenticationControllerTest {
     private MockMvc mvc;
     private PlayerService mockPlayerService;

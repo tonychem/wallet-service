@@ -3,7 +3,6 @@ package controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configuration.TestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +14,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.tonychem.config.JwtTokenFilter;
 import ru.tonychem.domain.dto.MoneyTransferRequest;
+import ru.tonychem.domain.dto.MoneyTransferResponse;
 import ru.tonychem.exception.GlobalExceptionHandler;
 import ru.tonychem.in.controller.MoneyRequestController;
 import ru.tonychem.in.dto.PlayerRequestMoneyDto;
+import ru.tonychem.in.dto.TransactionsListDto;
 import ru.tonychem.service.PlayerService;
 import ru.tonychem.service.PlayerSessionService;
 import ru.tonychem.util.JwtUtils;
@@ -38,7 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ContextConfiguration(classes = TestConfiguration.class)
 @ExtendWith(SpringExtension.class)
-@Disabled
 public class MoneyRequestControllerTest {
     private MockMvc mvc;
     private PlayerService mockPlayerService;
@@ -150,6 +150,48 @@ public class MoneyRequestControllerTest {
                 .andExpect(status().isForbidden());
 
         verify(mockPlayerService, never()).declinePendingRequest(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should approve transactions when token is valid")
+    public void shouldApproveTransactionsWhenTokenIsValid() throws Exception {
+        List<String> stringIds = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        TransactionsListDto transactionsListDto = new TransactionsListDto(stringIds);
+
+        when(mockPlayerSessionService.exists(any()))
+                .thenReturn(true);
+        when(mockPlayerService.approvePendingMoneyRequest(any(), any()))
+                .thenReturn(List.of(new MoneyTransferResponse(null, null)));
+
+
+        mvc.perform(post("/player-management/money-request/approve")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(transactionsListDto))
+                        .header("Authorization", "Bearer " + validJwtToken))
+                .andExpect(status().isOk());
+
+        verify(mockPlayerSessionService).exists(any());
+        verify(mockPlayerService).approvePendingMoneyRequest(any(), any());
+    }
+
+    @Test
+    @DisplayName("Should decline transactions when token is valid")
+    public void shouldDeclineTransactionsWhenTokenIsValid() throws Exception {
+        List<String> stringIds = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+        TransactionsListDto transactionsListDto = new TransactionsListDto(stringIds);
+
+        when(mockPlayerSessionService.exists(any()))
+                .thenReturn(true);
+        doNothing().when(mockPlayerService).declinePendingRequest(any(), any());
+
+        mvc.perform(post("/player-management/money-request/decline")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(transactionsListDto))
+                        .header("Authorization", "Bearer " + validJwtToken))
+                .andExpect(status().isOk());
+
+        verify(mockPlayerSessionService).exists(any());
+        verify(mockPlayerService).declinePendingRequest(any(), any());
     }
 
     private String generateValidTestToken() {

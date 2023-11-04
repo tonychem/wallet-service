@@ -3,7 +3,6 @@ package controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import configuration.TestConfiguration;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
-import ru.tonychem.domain.dto.PlayerCreationRequest;
 import ru.tonychem.exception.GlobalExceptionHandler;
 import ru.tonychem.in.controller.RegistrationController;
 import ru.tonychem.in.dto.UnsecuredPlayerCreationRequestDto;
@@ -33,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ContextConfiguration(classes = TestConfiguration.class)
 @ExtendWith(SpringExtension.class)
-@Disabled
 public class RegistrationControllerTest {
     private MockMvc mvc;
     private PlayerService mockPlayerService;
