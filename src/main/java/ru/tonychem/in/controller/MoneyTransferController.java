@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.tonychem.aop.annotations.Audit;
 import ru.tonychem.domain.dto.BalanceDto;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
 import ru.tonychem.in.dto.PlayerTransferMoneyRequestDto;
@@ -18,6 +19,7 @@ import ru.tonychem.service.PlayerSessionService;
 @RestController
 @RequestMapping(value = "/player-management/money-transfer")
 @RequiredArgsConstructor
+@Audit
 public class MoneyTransferController extends AbstractTokenConsumer {
 
     private final PlayerService playerService;

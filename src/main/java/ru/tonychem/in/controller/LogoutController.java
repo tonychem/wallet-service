@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tonychem.aop.annotations.Audit;
 import ru.tonychem.in.dto.UnpackedJwtClaims;
 import ru.tonychem.service.PlayerSessionService;
 
@@ -19,6 +20,7 @@ import ru.tonychem.service.PlayerSessionService;
 @RequestMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Audit
 public class LogoutController extends AbstractTokenConsumer {
     private final PlayerSessionService playerSessionService;
 

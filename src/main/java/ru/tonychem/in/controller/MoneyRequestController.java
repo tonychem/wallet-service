@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.tonychem.aop.annotations.Audit;
 import ru.tonychem.domain.dto.MoneyTransferRequest;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
 import ru.tonychem.in.dto.PlayerRequestMoneyDto;
@@ -23,6 +24,7 @@ import java.util.Collection;
 @RequestMapping(value = "/player-management/money-request", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Audit
 public class MoneyRequestController extends AbstractTokenConsumer {
 
     private final PlayerService playerService;

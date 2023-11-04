@@ -1,6 +1,7 @@
 package ru.tonychem.config;
 
 import liquibase.integration.spring.SpringLiquibase;
+import org.aspectj.lang.Aspects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import ru.tonychem.aop.ControllerAuditAspect;
 import ru.tonychem.logging.Logger;
 import ru.tonychem.logging.PGSQLLoggerImpl;
 import ru.tonychem.util.JwtUtils;
@@ -82,12 +84,12 @@ public class ApplicationConfiguration {
         return new PGSQLLoggerImpl(jdbcUsername, jdbcPassword, jdbcURL, domainSchemaName);
     }
 
-//    @Bean
-//    public ControllerAuditAspect controllerAuditAspect() {
-//        ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
-//        aspect.setLogger(logger());
-//        return aspect;
-//    }
+    @Bean
+    public ControllerAuditAspect controllerAuditAspect() {
+        ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
+        aspect.setLogger(logger());
+        return aspect;
+    }
 
     @Bean
     public void setJwtUtilsSecret() {

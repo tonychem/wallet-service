@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tonychem.aop.annotations.Audit;
 import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
 import ru.tonychem.exception.model.BadCredentialsException;
 import ru.tonychem.in.dto.UnsecuredPlayerCreationRequestDto;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "/registration")
 @RequiredArgsConstructor
+@Audit
 public class RegistrationController extends AbstractTokenProducer {
 
     private final PlayerService playerService;
