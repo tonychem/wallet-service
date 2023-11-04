@@ -1,6 +1,10 @@
 package ru.yandex.wallet.repository.jdbcimpl;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.wallet.domain.Player;
 import ru.yandex.wallet.exception.model.NoSuchPlayerException;
@@ -8,202 +12,112 @@ import ru.yandex.wallet.exception.model.PlayerAlreadyExistsException;
 import ru.yandex.wallet.repository.PlayerCrudRepository;
 
 import java.math.BigDecimal;
-import java.sql.*;
 
 @Repository
+@RequiredArgsConstructor
 public class PGJDBCPlayerCrudRepositoryImpl implements PlayerCrudRepository {
 
-    @Value("${spring.datasource.url}")
-    private String URL;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Value("${spring.datasource.username}")
-    private String username;
-
-    @Value("${spring.datasource.password}")
-    private String password;
-
-    public PGJDBCPlayerCrudRepositoryImpl() {}
-
-    public PGJDBCPlayerCrudRepositoryImpl(String URL, String username, String password, String schema) {
-        this.username = username;
-        this.password = password;
-        this.URL = URL + "?currentSchema=" + schema;
-    }
+    private RowMapper<Player> playerRowMapper = (rs, rowNum) -> {
+        Player player = Player.builder()
+                .id(rs.getLong("id"))
+                .login(rs.getString("login"))
+                .password(rs.getBytes("password"))
+                .username(rs.getString("username"))
+                .balance(rs.getBigDecimal("balance"))
+                .build();
+        return player;
+    };
 
     @Override
     public Player create(Player player) {
+        checkPlayerExists(player);
+
         String nextValQuery = "SELECT nextval('player_id_sequence')";
         String creationQuery = "INSERT INTO players (id, username, login, password, balance) VALUES (?,?,?,?,?)";
 
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             Statement generatorStatement = connection.createStatement();
-             PreparedStatement creationStatement = connection.prepareStatement(creationQuery)) {
-            checkPlayerExists(connection, player);
+        long nextId = jdbcTemplate.queryForObject(nextValQuery, Long.class);
+        player.setId(nextId);
+        player.setBalance(BigDecimal.ZERO);
 
-            ResultSet generatorValueResultSet = generatorStatement.executeQuery(nextValQuery);
+        jdbcTemplate.update(creationQuery, nextId, player.getUsername(), player.getLogin(),
+                player.getPassword(), player.getBalance());
 
-            long nextId = 0;
-            if (generatorValueResultSet.next()) {
-                nextId = generatorValueResultSet.getLong(1);
-            }
-
-            player.setId(nextId);
-            player.setBalance(BigDecimal.ZERO);
-
-            creationStatement.setLong(1, nextId);
-            creationStatement.setString(2, player.getUsername());
-            creationStatement.setString(3, player.getLogin());
-            creationStatement.setBytes(4, player.getPassword());
-            creationStatement.setBigDecimal(5, player.getBalance());
-            creationStatement.executeUpdate();
-
-            return player;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return player;
     }
 
     @Override
     public void delete(Long id) {
         String deletePlayerQuery = "DELETE FROM players WHERE id = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement deleteStatement = connection.prepareStatement(deletePlayerQuery)) {
-            deleteStatement.setLong(1, id);
-            deleteStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbcTemplate.update(deletePlayerQuery, id);
     }
 
     @Override
     public Player getById(Long id) {
         String searchByIdQuery = "SELECT * FROM players WHERE id = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement searchStatement = connection.prepareStatement(searchByIdQuery)) {
-            searchStatement.setLong(1, id);
-            ResultSet resultSet = searchStatement.executeQuery();
-
-            if (resultSet.next()) {
-                Player player = Player.builder()
-                        .id(resultSet.getLong("id"))
-                        .login(resultSet.getString("login"))
-                        .password(resultSet.getBytes("password"))
-                        .username(resultSet.getString("username"))
-                        .balance(resultSet.getBigDecimal("balance"))
-                        .build();
-                return player;
-            }
-
-            throw new NoSuchPlayerException(
-                    String.format("Пользователь с id=%d не существует", id)
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        try {
+            Player player = jdbcTemplate.queryForObject(searchByIdQuery, playerRowMapper, id);
+            return player;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchPlayerException(String.format("Пользователь с id=%d не существует", id));
         }
     }
 
     @Override
     public Player getByLogin(String login) {
         String searchByLoginQuery = "SELECT * from players WHERE login = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement searchStatement = connection.prepareStatement(searchByLoginQuery)) {
-            searchStatement.setString(1, login);
-            ResultSet resultSet = searchStatement.executeQuery();
-
-            if (resultSet.next()) {
-                Player player = Player.builder()
-                        .id(resultSet.getLong("id"))
-                        .login(resultSet.getString("login"))
-                        .password(resultSet.getBytes("password"))
-                        .username(resultSet.getString("username"))
-                        .balance(resultSet.getBigDecimal("balance"))
-                        .build();
-                return player;
-            }
-
-            throw new NoSuchPlayerException(
-                    String.format("Пользователь с логином login=%s не существует", login)
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        try {
+            Player player = jdbcTemplate.queryForObject(searchByLoginQuery, playerRowMapper, login);
+            return player;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NoSuchPlayerException(String.format("Пользователь с логином login=%s не существует", login));
         }
     }
 
     @Override
     public Player getByUsername(String playerName) {
         String searchByUsername = "SELECT * FROM players WHERE username = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement searchStatement = connection.prepareStatement(searchByUsername)) {
-            searchStatement.setString(1, playerName);
-            ResultSet resultSet = searchStatement.executeQuery();
-
-            if (resultSet.next()) {
-                Player player = Player.builder()
-                        .id(resultSet.getLong("id"))
-                        .login(resultSet.getString("login"))
-                        .password(resultSet.getBytes("password"))
-                        .username(resultSet.getString("username"))
-                        .balance(resultSet.getBigDecimal("balance"))
-                        .build();
-                return player;
-            }
-
+        try {
+            Player player = jdbcTemplate.queryForObject(searchByUsername, playerRowMapper, playerName);
+            return player;
+        } catch (EmptyResultDataAccessException e) {
             throw new NoSuchPlayerException(
-                    String.format("Пользователь с именем пользователя username=%s не существует", username)
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+                    String.format("Пользователь с именем username=%s не существует", playerName));
         }
     }
 
     @Override
     public Player setBalance(String login, BigDecimal newBalance) {
         String updateQuery = "UPDATE players SET balance = ? WHERE login = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-            updateStatement.setBigDecimal(1, newBalance);
-            updateStatement.setString(2, login);
-            updateStatement.executeUpdate();
-            return getByLogin(login);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbcTemplate.update(updateQuery, newBalance, login);
+        return getByLogin(login);
     }
 
     /**
      * Метод проверяет, существует ли пользователь с таким логином или ником в БД.
      * Если существует, метод завершает свою работу с ошибкой.
      *
-     * @param connection соединение с БД
-     * @param player     новый игрок
+     * @param player новый игрок
      * @throws PlayerAlreadyExistsException
      */
-    private void checkPlayerExists(Connection connection, Player player) {
+    private void checkPlayerExists(Player player) {
         String loginSearchQuery = "SELECT * FROM players WHERE login = ?";
         String usernameSearchQuery = "SELECT * FROM players WHERE username = ?";
 
-        try (PreparedStatement loginSearchStatement = connection.prepareStatement(loginSearchQuery);
-             PreparedStatement usernameSearchStatement = connection.prepareStatement(usernameSearchQuery)) {
-            loginSearchStatement.setString(1, player.getLogin());
-            boolean loginAlreadyExists = loginSearchStatement.executeQuery().next();
+        SqlRowSet loginSearchRowSet = jdbcTemplate.queryForRowSet(loginSearchQuery, player.getLogin());
+        SqlRowSet usernameSearchRowSet = jdbcTemplate.queryForRowSet(usernameSearchQuery, player.getUsername());
 
-            usernameSearchStatement.setString(1, player.getUsername());
-            boolean usernameAlreadyExists = usernameSearchStatement.executeQuery().next();
-
-            if (loginAlreadyExists) throw new PlayerAlreadyExistsException(
+        if (loginSearchRowSet.next()) {
+            throw new PlayerAlreadyExistsException(
                     String.format("Пользователь с таким логином login=%s уже существует", player.getLogin())
             );
+        }
 
-            if (usernameAlreadyExists) throw new PlayerAlreadyExistsException(
+        if (usernameSearchRowSet.next()) {
+            throw new PlayerAlreadyExistsException(
                     String.format("Пользователь с таким именем username=%s уже существует", player.getUsername())
             );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 }

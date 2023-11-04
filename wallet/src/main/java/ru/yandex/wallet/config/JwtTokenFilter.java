@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import ru.yandex.wallet.exception.ApiException;
 import ru.yandex.wallet.exception.model.InvalidTokenException;
 import ru.yandex.wallet.util.JwtUtils;
@@ -20,9 +21,7 @@ import java.io.IOException;
 public class JwtTokenFilter implements Filter {
 
     private final ObjectMapper mapper;
-
-    @Value("${jwt.secret}")
-    private String secret;
+    private final String secret;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)

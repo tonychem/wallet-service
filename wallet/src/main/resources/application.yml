@@ -6,6 +6,7 @@ spring:
     url: jdbc:postgresql://localhost:5433/wallet?currentSchema=wallet
     username: walletserviceroot
     password: walletservicerootpassword
+    driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:db/changelog/master-changelog.xml
     default-schema: wallet

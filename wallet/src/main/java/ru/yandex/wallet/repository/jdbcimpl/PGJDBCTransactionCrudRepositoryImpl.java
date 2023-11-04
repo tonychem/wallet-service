@@ -1,7 +1,11 @@
 package ru.yandex.wallet.repository.jdbcimpl;
 
-import org.postgresql.util.PGobject;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.wallet.domain.Transaction;
 import ru.yandex.wallet.domain.TransferRequestStatus;
@@ -11,91 +15,59 @@ import ru.yandex.wallet.exception.model.TransactionAlreadyExistsException;
 import ru.yandex.wallet.exception.model.TransactionStatusException;
 import ru.yandex.wallet.repository.TransactionCrudRepository;
 
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
+@RequiredArgsConstructor
 public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepository {
-    @Value("${spring.datasource.url}")
-    private String URL;
 
-    @Value("${spring.datasource.username}")
-    private String username;
+    private final JdbcTemplate jdbcTemplate;
 
-    @Value("${spring.datasource.password}")
-    private String password;
-
-    public PGJDBCTransactionCrudRepositoryImpl() {}
-
-    public PGJDBCTransactionCrudRepositoryImpl(String URL, String username, String password, String schema) {
-        this.username = username;
-        this.password = password;
-        this.URL = URL + "?currentSchema=" + schema;
-    }
+    private RowMapper<Transaction> transactionRowMapper = (rs, rowNum) -> {
+        Transaction transaction = Transaction.builder()
+                .id(rs.getObject("id", UUID.class))
+                .status(TransferRequestStatus.valueOf(rs.getString("status")))
+                .sender(rs.getString("sender"))
+                .recipient(rs.getString("recipient"))
+                .amount(rs.getBigDecimal("amount"))
+                .build();
+        return transaction;
+    };
 
     @Override
     public Transaction create(MoneyTransferRequest request) {
+        checkTransactionExists(request);
+
         String creationQuery = "INSERT INTO transactions (id, status, sender, recipient, amount) VALUES (?,?,?,?,?)";
 
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement creationStatement = connection.prepareStatement(creationQuery)) {
-            checkTransactionExists(connection, request);
+        jdbcTemplate.update(creationQuery, request.getId(), TransferRequestStatus.PENDING, request.getMoneyFrom(),
+                request.getMoneyTo(), request.getAmount());
 
-            Transaction transaction = Transaction.builder()
-                    .id(request.getId())
-                    .status(TransferRequestStatus.PENDING)
-                    .sender(request.getMoneyFrom())
-                    .recipient(request.getMoneyTo())
-                    .amount(request.getAmount())
-                    .build();
+        Transaction transaction = Transaction.builder()
+                .id(request.getId())
+                .status(TransferRequestStatus.PENDING)
+                .sender(request.getMoneyFrom())
+                .recipient(request.getMoneyTo())
+                .amount(request.getAmount())
+                .build();
 
-            PGobject uuid = new PGobject();
-            uuid.setType("uuid");
-            uuid.setValue(request.getId().toString());
-
-            creationStatement.setObject(1, uuid);
-            creationStatement.setString(2, transaction.getStatus().name());
-            creationStatement.setString(3, transaction.getSender());
-            creationStatement.setString(4, transaction.getRecipient());
-            creationStatement.setBigDecimal(5, transaction.getAmount());
-            creationStatement.executeUpdate();
-
-            return transaction;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return transaction;
     }
 
     @Override
     public Transaction getById(UUID id) {
         String selectQuery = "SELECT * FROM transactions WHERE id = ?";
-
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
-
-            selectStatement.setObject(1, id, Types.OTHER);
-            ResultSet resultSet = selectStatement.executeQuery();
-
-            if (resultSet.next()) {
-                Transaction transaction = Transaction.builder()
-                        .id(UUID.fromString(resultSet.getObject("id", PGobject.class).getValue()))
-                        .status(TransferRequestStatus.valueOf(resultSet.getString("status")))
-                        .sender(resultSet.getString("sender"))
-                        .recipient(resultSet.getString("recipient"))
-                        .amount(resultSet.getBigDecimal("amount"))
-                        .build();
-                return transaction;
-            }
-
+        try {
+            Transaction transaction = jdbcTemplate.queryForObject(selectQuery, transactionRowMapper, id);
+            return transaction;
+        } catch (EmptyResultDataAccessException e) {
             throw new NoSuchTransactionException(
                     String.format("Не существует транзакции с id=%s", id)
             );
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -108,41 +80,30 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
                                                                                 TransferRequestStatus status) {
         String selectQuery = buildDynamicQuery(sender, recipient, status);
 
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+        PreparedStatementCreator psc = con -> {
+            PreparedStatement preparedStatement = con.prepareStatement(selectQuery);
+
             int columnIndex = 1;
 
             if (sender != null) {
-                selectStatement.setString(columnIndex, sender);
+                preparedStatement.setString(columnIndex, sender);
                 columnIndex++;
             }
 
             if (recipient != null) {
-                selectStatement.setString(columnIndex, recipient);
+                preparedStatement.setString(columnIndex, recipient);
                 columnIndex++;
             }
 
             if (status != null) {
-                selectStatement.setString(columnIndex, status.name());
+                preparedStatement.setString(columnIndex, status.name());
             }
 
-            ResultSet resultSet = selectStatement.executeQuery();
-            List<Transaction> transactions = new ArrayList<>();
-            while (resultSet.next()) {
-                transactions.add(
-                        new Transaction(
-                                UUID.fromString(resultSet.getObject(1, PGobject.class).toString()),
-                                TransferRequestStatus.valueOf(resultSet.getString("status")),
-                                resultSet.getString("sender"),
-                                resultSet.getString("recipient"),
-                                resultSet.getBigDecimal("amount")
-                        )
-                );
-            }
-            return transactions;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+            return preparedStatement;
+        };
+
+        Stream<Transaction> transactionStream = jdbcTemplate.queryForStream(psc, transactionRowMapper);
+        return transactionStream.collect(Collectors.toList());
     }
 
     /**
@@ -176,21 +137,10 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
 
         String updateQuery = "UPDATE transactions SET status = ? WHERE id = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-            PGobject uuid = new PGobject();
-            uuid.setType("uuid");
-            uuid.setValue(transaction.getId().toString());
+        jdbcTemplate.update(updateQuery, TransferRequestStatus.APPROVED.name(), id);
+        transaction.setStatus(TransferRequestStatus.APPROVED);
 
-            updateStatement.setString(1, TransferRequestStatus.APPROVED.name());
-            updateStatement.setObject(2, uuid);
-            updateStatement.executeUpdate();
-
-            transaction.setStatus(TransferRequestStatus.APPROVED);
-            return transaction;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return transaction;
     }
 
     /**
@@ -208,21 +158,9 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
 
         String updateQuery = "UPDATE transactions SET status = ? WHERE id = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-            PGobject uuid = new PGobject();
-            uuid.setType("uuid");
-            uuid.setValue(transaction.getId().toString());
-
-            updateStatement.setString(1, TransferRequestStatus.DECLINED.name());
-            updateStatement.setObject(2, uuid);
-            updateStatement.executeUpdate();
-
-            transaction.setStatus(TransferRequestStatus.DECLINED);
-            return transaction;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbcTemplate.update(updateQuery, TransferRequestStatus.DECLINED.name(), id);
+        transaction.setStatus(TransferRequestStatus.DECLINED);
+        return transaction;
     }
 
     /**
@@ -233,49 +171,27 @@ public class PGJDBCTransactionCrudRepositoryImpl implements TransactionCrudRepos
         Transaction transaction = getById(id);
         String updateQuery = "UPDATE transactions SET status = ? WHERE id = ?";
 
-        try (Connection connection = DriverManager.getConnection(URL, username, password);
-             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-            PGobject uuid = new PGobject();
-            uuid.setType("uuid");
-            uuid.setValue(id.toString());
-
-            updateStatement.setString(1, TransferRequestStatus.FAILED.name());
-            updateStatement.setObject(2, uuid);
-            updateStatement.executeUpdate();
-
-            transaction.setStatus(TransferRequestStatus.FAILED);
-            return transaction;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        jdbcTemplate.update(updateQuery, TransferRequestStatus.FAILED.name(), id);
+        transaction.setStatus(TransferRequestStatus.FAILED);
+        return transaction;
     }
 
     /**
      * Метод проверяет, существует ли транзакция с id, указанным в запросе. Если такая транзакция существует,
      * метод завершает работу с ошибкой.
      *
-     * @param connection соединение с БД
-     * @param request    запрос денежных средств
+     * @param request запрос денежных средств
      * @throws TransactionAlreadyExistsException
      */
-    private void checkTransactionExists(Connection connection, MoneyTransferRequest request) {
+    private void checkTransactionExists(MoneyTransferRequest request) {
         String checkTransactionExistsQuery = "SELECT * FROM transactions WHERE id = ?";
 
-        try (PreparedStatement checkExistenceStatement = connection.prepareStatement(checkTransactionExistsQuery)) {
-            PGobject uuid = new PGobject();
-            uuid.setType("uuid");
-            uuid.setValue(request.getId().toString());
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(checkTransactionExistsQuery, request.getId());
 
-            checkExistenceStatement.setObject(1, uuid);
-            boolean transactionAlreadyExists = checkExistenceStatement.executeQuery().next();
-
-            if (transactionAlreadyExists) {
-                throw new TransactionAlreadyExistsException(
-                        String.format("Транзакция с id=%s уже существует", request.getId())
-                );
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (rowSet.next()) {
+            throw new TransactionAlreadyExistsException(
+                    String.format("Транзакция с id=%s уже существует", request.getId())
+            );
         }
     }
 
