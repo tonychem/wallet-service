@@ -20,8 +20,8 @@ import ru.tonychem.service.PlayerSessionService;
 @RequiredArgsConstructor
 public class MoneyTransferController extends AbstractTokenConsumer {
 
-    private final PlayerSessionService playerSessionService;
     private final PlayerService playerService;
+    private final PlayerSessionService playerSessionService;
 
     @ApiOperation("Перевод денежных средств")
     @ApiResponses(

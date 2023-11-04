@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.tonychem.in.dto.UnpackedJwtClaims;
 import ru.tonychem.service.PlayerSessionService;
 
-import java.util.UUID;
-
 @Api(description = "Деавторизация игрока")
 @RestController
 @RequestMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE,

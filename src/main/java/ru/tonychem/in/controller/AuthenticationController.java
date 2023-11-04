@@ -26,8 +26,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthenticationController extends AbstractTokenProducer {
 
-    private final PlayerSessionService playerSessionService;
     private final PlayerService playerService;
+    private final PlayerSessionService playerSessionService;
 
     @ApiOperation(value = "Получение токена авторизации")
     @ApiResponses(

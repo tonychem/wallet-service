@@ -88,7 +88,7 @@ public class PlayerServiceImpl implements PlayerService {
         UUID transactionId = UUID.randomUUID();
 
         MoneyTransferRequest moneyTransferRequest =
-                moneyTransferMapper.toMoneyTransferRequest(transactionId, moneyRequest);
+                moneyTransferMapper.toMoneyTransferRequest(transactionId, sender, moneyRequest);
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
 
         MoneyTransferResponse moneyTransferResponse =
@@ -107,7 +107,7 @@ public class PlayerServiceImpl implements PlayerService {
         UUID transactionId = UUID.randomUUID();
 
         MoneyTransferRequest moneyTransferRequest =
-                moneyTransferMapper.toMoneyTransferRequest(transactionId, requestMoneyDto);
+                moneyTransferMapper.toMoneyTransferRequest(transactionId, requesterLogin, requestMoneyDto);
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
 
         return new MoneyTransferResponse(

@@ -21,12 +21,16 @@ public interface MoneyTransferMapper {
     @Mapping(source = "moneyRequestDto.donor", target = "moneyFrom")
     @Mapping(source = "moneyRequestDto.amount", target = "amount", qualifiedByName = "doubleToBigDecimal")
     @Mapping(source = "transactionId", target = "id")
-    MoneyTransferRequest toMoneyTransferRequest(UUID transactionId, PlayerRequestMoneyDto moneyRequestDto);
+    @Mapping(source = "recipient", target = "moneyTo")
+    MoneyTransferRequest toMoneyTransferRequest(UUID transactionId, String recipient,
+                                                PlayerRequestMoneyDto moneyRequestDto);
 
     @Mapping(source = "moneyRequestDto.recipient", target = "moneyTo")
     @Mapping(source = "moneyRequestDto.amount", target = "amount", qualifiedByName = "doubleToBigDecimal")
     @Mapping(source = "transactionId", target = "id")
-    MoneyTransferRequest toMoneyTransferRequest(UUID transactionId, PlayerTransferMoneyRequestDto moneyRequestDto);
+    @Mapping(source = "donor", target = "moneyFrom")
+    MoneyTransferRequest toMoneyTransferRequest(UUID transactionId, String donor,
+                                                PlayerTransferMoneyRequestDto moneyRequestDto);
 
     @Mapping(source = "requester.id", target = "id")
     @Mapping(source = "requester.username", target = "username")
