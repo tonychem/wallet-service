@@ -1,23 +1,26 @@
-package ru.tonychem.service;
+package ru.tonychem.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.tonychem.domain.Player;
 import ru.tonychem.domain.Transaction;
 import ru.tonychem.domain.TransferRequestStatus;
 import ru.tonychem.domain.dto.*;
+import ru.tonychem.domain.mapper.MoneyTransferMapper;
 import ru.tonychem.domain.mapper.PlayerMapper;
 import ru.tonychem.domain.mapper.TransactionMapper;
 import ru.tonychem.exception.model.BadCredentialsException;
 import ru.tonychem.exception.model.DeficientBalanceException;
 import ru.tonychem.exception.model.PlayerAlreadyExistsException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import ru.tonychem.in.dto.*;
 import ru.tonychem.repository.PlayerCrudRepository;
 import ru.tonychem.repository.TransactionCrudRepository;
+import ru.tonychem.service.PlayerAction;
+import ru.tonychem.service.PlayerService;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.UUID;
+import java.security.MessageDigest;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,18 +28,24 @@ import java.util.stream.Collectors;
 public class PlayerServiceImpl implements PlayerService {
     private final PlayerCrudRepository playerRepository;
     private final TransactionCrudRepository transactionRepository;
+    private final MessageDigest messageDigest;
 
-    private final PlayerMapper playerMapper;
-    private final TransactionMapper transactionMapper;
+    private PlayerMapper playerMapper = PlayerMapper.INSTANCE;
+    private TransactionMapper transactionMapper = TransactionMapper.INSTANCE;
+    private MoneyTransferMapper moneyTransferMapper = MoneyTransferMapper.INSTANCE;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public AuthenticatedPlayerDto authenticate(String login, byte[] password) throws BadCredentialsException {
-        Player player = playerRepository.getByLogin(login);
+    public AuthenticatedPlayerDto authenticate(UnsecuredAuthenticationRequestDto unsecuredAuthenticationRequest)
+            throws BadCredentialsException {
+        Player player = playerRepository.getByLogin(unsecuredAuthenticationRequest.getLogin());
+        byte[] hashedPassword = messageDigest.digest(unsecuredAuthenticationRequest.getPassword().getBytes());
 
-        if (!Arrays.equals(player.getPassword(), password)) throw new BadCredentialsException("Некорректный пароль");
+        if (!Arrays.equals(player.getPassword(), hashedPassword)) {
+            throw new BadCredentialsException("Некорректный пароль");
+        }
 
         return playerMapper.toAuthenticatedPlayerDto(player);
     }
@@ -45,12 +54,12 @@ public class PlayerServiceImpl implements PlayerService {
      * {@inheritDoc}
      */
     @Override
-    public AuthenticatedPlayerDto register(PlayerCreationRequest playerCreationRequest) throws BadCredentialsException {
+    public AuthenticatedPlayerDto register(UnsecuredPlayerCreationRequestDto playerCreationRequest) throws BadCredentialsException {
         try {
             Player newPlayer = Player.builder()
                     .username(playerCreationRequest.getUsername())
                     .login(playerCreationRequest.getLogin())
-                    .password(playerCreationRequest.getPassword())
+                    .password(messageDigest.digest(playerCreationRequest.getPassword().getBytes()))
                     .build();
 
             Player player = playerRepository.create(newPlayer);
@@ -65,28 +74,40 @@ public class PlayerServiceImpl implements PlayerService {
      * {@inheritDoc}
      */
     @Override
-    public AuthenticatedPlayerDto getBalance(Long id) {
+    public BalanceDto getBalance(Long id) {
         Player player = playerRepository.getById(id);
-        return playerMapper.toAuthenticatedPlayerDto(player);
+        return playerMapper.toBalanceDto(player);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public MoneyTransferResponse transferMoneyTo(MoneyTransferRequest moneyTransferRequest) {
-        Player receiver = playerRepository.getByLogin(moneyTransferRequest.getMoneyTo());
+    public BalanceDto transferMoneyTo(String sender, PlayerTransferMoneyRequestDto moneyRequest) {
+        Player receiver = playerRepository.getByLogin(moneyRequest.getRecipient());
+        UUID transactionId = UUID.randomUUID();
+
+        MoneyTransferRequest moneyTransferRequest =
+                moneyTransferMapper.toMoneyTransferRequest(transactionId, moneyRequest);
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
-        return transferMoneyBetweenAccounts(transaction, moneyTransferRequest);
+
+        MoneyTransferResponse moneyTransferResponse =
+                transferMoneyBetweenAccounts(transaction, moneyTransferRequest);
+
+        return moneyTransferMapper.toBalanceDto(moneyTransferResponse);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public MoneyTransferResponse requestMoneyFrom(MoneyTransferRequest moneyTransferRequest) {
-        Player requester = playerRepository.getByLogin(moneyTransferRequest.getMoneyTo());
-        Player donor = playerRepository.getByLogin(moneyTransferRequest.getMoneyFrom());
+    public MoneyTransferResponse requestMoneyFrom(String requesterLogin, PlayerRequestMoneyDto requestMoneyDto) {
+        Player requester = playerRepository.getByLogin(requesterLogin);
+        Player donor = playerRepository.getByLogin(requestMoneyDto.getDonor());
+        UUID transactionId = UUID.randomUUID();
+
+        MoneyTransferRequest moneyTransferRequest =
+                moneyTransferMapper.toMoneyTransferRequest(transactionId, requestMoneyDto);
         Transaction transaction = transactionRepository.create(moneyTransferRequest);
 
         return new MoneyTransferResponse(
@@ -113,20 +134,30 @@ public class PlayerServiceImpl implements PlayerService {
      * {@inheritDoc}
      */
     @Override
-    public MoneyTransferResponse approvePendingMoneyRequest(String donorUsername, UUID requestId) {
-        Transaction transaction = transactionRepository.approveTransaction(donorUsername, requestId);
+    public Collection<MoneyTransferResponse> approvePendingMoneyRequest(String donorUsername, TransactionsListDto transactionsList) {
+        List<UUID> validIds = extractValidUUIDs(transactionsList.getIds());
+        List<MoneyTransferResponse> moneyTransferResponseList = new ArrayList<>();
 
-        return transferMoneyBetweenAccounts(transaction,
-                transactionMapper.toMoneyTransferRequest(transaction)
-        );
+        for (UUID transactionId : validIds) {
+            Transaction transaction = transactionRepository.approveTransaction(donorUsername, transactionId);
+            MoneyTransferResponse moneyTransferResponse = transferMoneyBetweenAccounts(transaction,
+                    transactionMapper.toMoneyTransferRequest(transaction));
+            moneyTransferResponseList.add(moneyTransferResponse);
+        }
+
+        return moneyTransferResponseList;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void declinePendingRequest(String donorUsername, UUID requestId) {
-        transactionRepository.declineTransaction(donorUsername, requestId);
+    public void declinePendingRequest(String donorUsername, TransactionsListDto transactionsList) {
+        List<UUID> validIds = extractValidUUIDs(transactionsList.getIds());
+
+        for (UUID transactionId : validIds) {
+            transactionRepository.declineTransaction(donorUsername, transactionId);
+        }
     }
 
     /**
@@ -141,7 +172,12 @@ public class PlayerServiceImpl implements PlayerService {
                     .getTransactionsBySenderAndRecipientAndStatus(login, null, null);
             case CREDIT -> transactionsByUser = transactionRepository
                     .getTransactionsBySenderAndRecipientAndStatus(null, login, null);
-            default -> throw new NullPointerException();
+            default -> {
+                transactionsByUser = transactionRepository
+                        .getTransactionsBySenderAndRecipientAndStatus(login, null, null);
+                transactionsByUser.addAll(transactionRepository
+                        .getTransactionsBySenderAndRecipientAndStatus(null, login, null));
+            }
         }
 
         return transactionsByUser.stream()
@@ -182,5 +218,21 @@ public class PlayerServiceImpl implements PlayerService {
                 playerMapper.toAuthenticatedPlayerDto(sender),
                 transactionMapper.toTransactionDto(approvedTransaction)
         );
+    }
+
+    /**
+     * Метод читает коллекцию UUID в строковом представлении, и возвращает список UUID, игнорируя невалидные строковые
+     * представления UUID
+     */
+    private List<UUID> extractValidUUIDs(Collection<String> ids) {
+        List<UUID> result = new ArrayList<>(ids.size());
+
+        for (String id : ids) {
+            try {
+                result.add(UUID.fromString(id));
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        return result;
     }
 }

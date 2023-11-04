@@ -10,21 +10,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.tonychem.application.ApplicationController;
-import ru.tonychem.application.model.dto.AuthenticationDto;
-import ru.tonychem.domain.dto.PlayerCreationRequest;
+import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
 import ru.tonychem.exception.model.BadCredentialsException;
 import ru.tonychem.in.dto.UnsecuredPlayerCreationRequestDto;
-import ru.tonychem.in.mapper.PlayerRequestMapper;
+import ru.tonychem.service.PlayerService;
+import ru.tonychem.service.PlayerSessionService;
+
+import java.util.UUID;
 
 @Api(description = "Регистрация новых пользователей")
 @RestController
 @RequestMapping(value = "/registration")
 @RequiredArgsConstructor
 public class RegistrationController extends AbstractTokenProducer {
-    private final ApplicationController controller;
 
-    private final PlayerRequestMapper playerRequestMapper;
+    private final PlayerService playerService;
+    private final PlayerSessionService playerSessionService;
 
     @ApiOperation("Регистрация пользователя")
     @ApiResponses(
@@ -33,14 +34,13 @@ public class RegistrationController extends AbstractTokenProducer {
                     @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
     )
     @PostMapping
-    public ResponseEntity<AuthenticationDto> registerPlayer(@RequestBody UnsecuredPlayerCreationRequestDto
-                                                                    unsecuredPlayerCreationRequestDto)
+    public ResponseEntity<AuthenticatedPlayerDto> registerPlayer(@RequestBody UnsecuredPlayerCreationRequestDto
+                                                                         unsecuredPlayerCreationRequestDto)
             throws BadCredentialsException {
-        PlayerCreationRequest creationRequest = playerRequestMapper.toPlayerCreationRequest(unsecuredPlayerCreationRequestDto);
-        AuthenticationDto authenticationDto = controller.registerUser(creationRequest);
-
+        AuthenticatedPlayerDto authentication = playerService.register(unsecuredPlayerCreationRequestDto);
+        UUID sessionId = playerSessionService.open(authentication);
         return ResponseEntity.ok()
-                .header("Authorization", generateJwt(authenticationDto))
-                .body(authenticationDto);
+                .header("Authorization", generateJwt(authentication, sessionId))
+                .body(authentication);
     }
 }

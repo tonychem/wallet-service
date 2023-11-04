@@ -2,49 +2,52 @@ package ru.tonychem.service;
 
 import ru.tonychem.domain.dto.*;
 import ru.tonychem.exception.model.BadCredentialsException;
+import ru.tonychem.in.dto.*;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public interface PlayerService {
 
     /**
      * Аутентификация пользователя
      *
-     * @param login    логин пользователя для аутентификации
-     * @param password пароль в зашифрованном виде (MD5 алгоритм)
+     * @param unsecuredAuthenticationRequest объект, содержащий связку логин-пароль в незашифрованном виде
      * @throws BadCredentialsException
      */
-    AuthenticatedPlayerDto authenticate(String login, byte[] password) throws BadCredentialsException;
+    AuthenticatedPlayerDto authenticate(UnsecuredAuthenticationRequestDto unsecuredAuthenticationRequest)
+            throws BadCredentialsException;
 
     /**
      * Регистрация пользователя
      *
-     * @param playerCreationRequest обертка над пользовательскими секретами (логин, пароль, ник)
+     * @param playerCreationRequest обертка над пользовательскими секретами (логин, пароль, ник) без шифрования
      * @throws BadCredentialsException
      */
-    AuthenticatedPlayerDto register(PlayerCreationRequest playerCreationRequest) throws BadCredentialsException;
+    AuthenticatedPlayerDto register(UnsecuredPlayerCreationRequestDto playerCreationRequest) throws BadCredentialsException;
 
     /**
      * Получение баланса пользователя по идентификатору
      *
      * @param id идентификатор пользователя
      */
-    AuthenticatedPlayerDto getBalance(Long id);
+    BalanceDto getBalance(Long id);
 
     /**
      * Перевод денег от одного игрока к другому
      *
-     * @param moneyTransferRequest обертка над параметрами запроса
+     * @param sender       логин отправителя денежных средств
+     * @param moneyRequest объект, содержащий имя получателя и сумму
+     * @return остаток денежных средств после перевода
      */
-    MoneyTransferResponse transferMoneyTo(MoneyTransferRequest moneyTransferRequest);
+    BalanceDto transferMoneyTo(String sender, PlayerTransferMoneyRequestDto moneyRequest);
 
     /**
      * Отправить запрос на получение денег от другого пользователя
      *
-     * @param moneyTransferRequest обертка над параметрами запроса
+     * @param requester пользователь, запрашивающий денежные средства
+     * @param requestMoneyDto объект, содержащий параметры запроса: получателя запроса и сумму
      */
-    MoneyTransferResponse requestMoneyFrom(MoneyTransferRequest moneyTransferRequest);
+    MoneyTransferResponse requestMoneyFrom(String requester, PlayerRequestMoneyDto requestMoneyDto);
 
     /**
      * Получить список неподтвержденных запросов на отправку денег другим пользователям
@@ -54,12 +57,12 @@ public interface PlayerService {
     /**
      * Подтвердить запрос на перевод денежной суммы игроку
      *
-     * @param donorUsername отправитель
-     * @param requestId     идентификатор транзакции
+     * @param donorUsername       отправитель
+     * @param transactionsListDto объект, содержащий коллекцию id транзакций в строковом представлении
      */
-    MoneyTransferResponse approvePendingMoneyRequest(String donorUsername, UUID requestId);
+    Collection<MoneyTransferResponse> approvePendingMoneyRequest(String donorUsername, TransactionsListDto transactionsList);
 
-    void declinePendingRequest(String donorUsername, UUID requestId);
+    void declinePendingRequest(String donorUsername, TransactionsListDto transactionsList);
 
     /**
      * Получить историю транзакций пользователя

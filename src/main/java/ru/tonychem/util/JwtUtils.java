@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.function.Function;
 /**
  * Утилитарный класс для работы с JWT
  */
-@Component
 public class JwtUtils {
     private static String secret;
 

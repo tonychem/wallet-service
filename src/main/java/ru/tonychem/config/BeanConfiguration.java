@@ -3,16 +3,15 @@ package ru.tonychem.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.tonychem.application.ApplicationController;
-import ru.tonychem.application.model.mapper.AuthenticationMapper;
-import ru.tonychem.domain.mapper.PlayerMapper;
-import ru.tonychem.domain.mapper.TransactionMapper;
 import ru.tonychem.repository.PlayerCrudRepository;
 import ru.tonychem.repository.TransactionCrudRepository;
 import ru.tonychem.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 import ru.tonychem.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 import ru.tonychem.service.PlayerService;
-import ru.tonychem.service.PlayerServiceImpl;
+import ru.tonychem.service.impl.PlayerServiceImpl;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @Configuration
 public class BeanConfiguration {
@@ -40,28 +39,12 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public PlayerMapper playerMapper() {
-        return PlayerMapper.INSTANCE;
+    public MessageDigest messageDigest() throws NoSuchAlgorithmException {
+        return MessageDigest.getInstance("MD5");
     }
 
     @Bean
-    public TransactionMapper transactionMapper() {
-        return TransactionMapper.INSTANCE;
-    }
-
-    @Bean
-    public PlayerService playerService() {
-        return new PlayerServiceImpl(playerCrudRepository(), transactionCrudRepository(),
-                playerMapper(), transactionMapper());
-    }
-
-    @Bean
-    public AuthenticationMapper authenticationMapper() {
-        return AuthenticationMapper.INSTANCE;
-    }
-
-    @Bean
-    public ApplicationController applicationController() {
-        return new ApplicationController(playerService(), authenticationMapper());
+    public PlayerService playerService() throws NoSuchAlgorithmException {
+        return new PlayerServiceImpl(playerCrudRepository(), transactionCrudRepository(), messageDigest());
     }
 }

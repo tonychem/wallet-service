@@ -8,26 +8,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.tonychem.application.ApplicationController;
 import ru.tonychem.domain.dto.MoneyTransferRequest;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
 import ru.tonychem.in.dto.PlayerRequestMoneyDto;
 import ru.tonychem.in.dto.TransactionsListDto;
-import ru.tonychem.util.JwtUtils;
+import ru.tonychem.in.dto.UnpackedJwtClaims;
+import ru.tonychem.service.PlayerService;
+import ru.tonychem.service.PlayerSessionService;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
 
 @Api(description = "Взаимодействие с денежными запросами")
 @RestController
 @RequestMapping(value = "/player-management/money-request", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-public class MoneyRequestController {
-    private final ApplicationController controller;
+public class MoneyRequestController extends AbstractTokenConsumer {
+
+    private final PlayerService playerService;
+    private final PlayerSessionService playerSessionService;
 
     @ApiOperation("Получение списка неподтвержденных денежных запросов")
     @ApiResponses(
@@ -37,11 +36,11 @@ public class MoneyRequestController {
     @GetMapping
     public ResponseEntity<Collection<MoneyTransferRequest>> getPendingMoneyRequests(@RequestHeader("Authorization") String authToken)
             throws UnauthorizedOperationException {
-        String jwt = authToken.substring(7);
-        String login = (String) JwtUtils.extractClaim(jwt, claims -> claims.get("login"));
-        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
+        UnpackedJwtClaims claims = unpackJwtClaims(authToken);
 
-        Collection<MoneyTransferRequest> moneyTransferRequests = controller.getPendingMoneyRequests(login, sessionId);
+        playerSessionService.exists(claims.getSessionId());
+        Collection<MoneyTransferRequest> moneyTransferRequests =
+                playerService.getPendingMoneyRequests(claims.getLogin());
 
         return ResponseEntity.ok(moneyTransferRequests);
     }
@@ -55,13 +54,11 @@ public class MoneyRequestController {
     @PostMapping
     public ResponseEntity<?> requestMoney(@RequestHeader("Authorization") String authToken,
                                           @RequestBody PlayerRequestMoneyDto moneyRequestDto) throws UnauthorizedOperationException {
-        String jwt = authToken.substring(7);
-        String requester = (String) JwtUtils.extractClaim(jwt, claims -> claims.get("login"));
-        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
-        UUID transactionId = UUID.randomUUID();
+        UnpackedJwtClaims claims = unpackJwtClaims(authToken);
 
-        controller.requestMoneyFrom(requester, moneyRequestDto.getDonor(), BigDecimal.valueOf(moneyRequestDto.getAmount()),
-                sessionId, transactionId);
+        playerSessionService.exists(claims.getSessionId());
+        playerService.requestMoneyFrom(claims.getUsername(), moneyRequestDto);
+
         return ResponseEntity.ok().build();
     }
 
@@ -74,14 +71,10 @@ public class MoneyRequestController {
     public ResponseEntity<?> approvePendingMoneyRequests(@RequestHeader("Authorization") String authToken,
                                                          @RequestBody TransactionsListDto transactions)
             throws UnauthorizedOperationException {
-        String jwt = authToken.substring(7);
-        String username = (String) JwtUtils.extractClaim(jwt, claims -> claims.get("username"));
-        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
-        List<UUID> validIds = extractValidUUIDs(transactions.getIds());
+        UnpackedJwtClaims claims = unpackJwtClaims(authToken);
 
-        for (UUID id : validIds) {
-            controller.approvePendingRequest(sessionId, username, id);
-        }
+        playerSessionService.exists(claims.getSessionId());
+        playerService.approvePendingMoneyRequest(claims.getUsername(), transactions);
 
         return ResponseEntity.ok().build();
     }
@@ -95,27 +88,11 @@ public class MoneyRequestController {
     public ResponseEntity<?> declinePendingMoneyRequests(@RequestHeader("Authorization") String authToken,
                                                          @RequestBody TransactionsListDto transactions)
             throws UnauthorizedOperationException {
-        String jwt = authToken.substring(7);
-        String username = (String) JwtUtils.extractClaim(jwt, claims -> claims.get("username"));
-        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
-        List<UUID> validIds = extractValidUUIDs(transactions.getIds());
+        UnpackedJwtClaims claims = unpackJwtClaims(authToken);
 
-        for (UUID id : validIds) {
-            controller.declinePendingRequest(sessionId, username, id);
-        }
+        playerSessionService.exists(claims.getSessionId());
+        playerService.declinePendingRequest(claims.getUsername(), transactions);
 
         return ResponseEntity.ok().build();
-    }
-
-    private List<UUID> extractValidUUIDs(Collection<String> ids) {
-        List<UUID> result = new ArrayList<>(ids.size());
-
-        for (String id : ids) {
-            try {
-                result.add(UUID.fromString(id));
-            } catch (IllegalArgumentException e) {
-            }
-        }
-        return result;
     }
 }

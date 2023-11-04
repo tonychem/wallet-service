@@ -8,24 +8,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.tonychem.application.ApplicationController;
-import ru.tonychem.application.model.dto.BalanceDto;
+import ru.tonychem.domain.dto.BalanceDto;
 import ru.tonychem.domain.dto.TransactionDto;
 import ru.tonychem.exception.model.UnauthorizedOperationException;
+import ru.tonychem.in.dto.UnpackedJwtClaims;
 import ru.tonychem.service.PlayerAction;
-import ru.tonychem.util.JwtUtils;
+import ru.tonychem.service.PlayerService;
+import ru.tonychem.service.PlayerSessionService;
 
 import java.util.Collection;
-import java.util.UUID;
 
 @Api(description = "Действия с кошельком")
 @RestController
 @RequestMapping(value = "/player-management/wallet", consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-public class WalletController {
+public class WalletController extends AbstractTokenConsumer {
 
-    private final ApplicationController controller;
+    private final PlayerService playerService;
+    private final PlayerSessionService playerSessionService;
 
     @ApiOperation("Получение баланса игрока")
     @ApiResponses(
@@ -35,12 +36,12 @@ public class WalletController {
     @GetMapping("/balance")
     public ResponseEntity<BalanceDto> getBalance(@RequestHeader("Authorization") String authToken)
             throws UnauthorizedOperationException {
-        String jwt = authToken.substring(7);
-        Long userId = Long.valueOf((Integer) JwtUtils.extractClaim(jwt, claims -> claims.get("id")));
-        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
+        UnpackedJwtClaims claims = unpackJwtClaims(authToken);
 
-        BalanceDto balanceDto = controller.getBalance(userId, sessionId);
-        return ResponseEntity.ok(balanceDto);
+        playerSessionService.exists(claims.getSessionId());
+        BalanceDto balance = playerService.getBalance(claims.getUserId());
+
+        return ResponseEntity.ok(balance);
     }
 
     @ApiOperation("Получение истории движения денежных средств")
@@ -52,18 +53,10 @@ public class WalletController {
     public ResponseEntity<Collection<TransactionDto>> getHistory(@RequestHeader("Authorization") String authToken,
                                                                  @RequestParam(value = "action", required = false) PlayerAction action)
             throws UnauthorizedOperationException {
-        String jwt = authToken.substring(7);
-        String login = (String) JwtUtils.extractClaim(jwt, claims -> claims.get("login"));
-        UUID sessionId = UUID.fromString((String) JwtUtils.extractClaim(jwt, claims -> claims.get("session-id")));
+        UnpackedJwtClaims claims = unpackJwtClaims(authToken);
 
-        Collection<TransactionDto> transactionDtos;
-
-        if (action != null) {
-            transactionDtos = controller.getHistory(login, action, sessionId);
-        } else {
-            transactionDtos = controller.getHistory(login, PlayerAction.CREDIT, sessionId);
-            transactionDtos.addAll(controller.getHistory(login, PlayerAction.DEBIT, sessionId));
-        }
+        playerSessionService.exists(claims.getSessionId());
+        Collection<TransactionDto> transactionDtos = playerService.getHistory(claims.getLogin(), action);
 
         return ResponseEntity.ok(transactionDtos);
     }

@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.tonychem.application.ApplicationController;
-import ru.tonychem.application.model.dto.AuthenticationDto;
-import ru.tonychem.application.model.dto.AuthenticationRequest;
+import ru.tonychem.domain.dto.AuthenticatedPlayerDto;
 import ru.tonychem.exception.model.BadCredentialsException;
 import ru.tonychem.in.dto.UnsecuredAuthenticationRequestDto;
-import ru.tonychem.in.mapper.AuthenticationRequestMapper;
+import ru.tonychem.service.PlayerService;
+import ru.tonychem.service.PlayerSessionService;
+
+import java.util.UUID;
 
 @Api(description = "Авторизация игроков")
 @RestController
@@ -24,8 +25,9 @@ import ru.tonychem.in.mapper.AuthenticationRequestMapper;
         consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class AuthenticationController extends AbstractTokenProducer {
-    private final ApplicationController applicationController;
-    private final AuthenticationRequestMapper authenticationRequestMapper;
+
+    private final PlayerSessionService playerSessionService;
+    private final PlayerService playerService;
 
     @ApiOperation(value = "Получение токена авторизации")
     @ApiResponses(
@@ -33,13 +35,13 @@ public class AuthenticationController extends AbstractTokenProducer {
                     @ApiResponse(code = 400, message = "Часть требуемых данных отсутствует/не существует связка login-password")}
     )
     @PostMapping
-    public ResponseEntity<AuthenticationDto> authenticate(@RequestBody UnsecuredAuthenticationRequestDto requestDto)
+    public ResponseEntity<AuthenticatedPlayerDto> authenticate(@RequestBody UnsecuredAuthenticationRequestDto requestDto)
             throws BadCredentialsException {
-        AuthenticationRequest authenticationRequest = authenticationRequestMapper.toAuthenticationRequest(requestDto);
-        AuthenticationDto authenticationDto = applicationController.authenticate(authenticationRequest);
+        AuthenticatedPlayerDto authenticationDto = playerService.authenticate(requestDto);
+        UUID sessionId = playerSessionService.open(authenticationDto);
 
         return ResponseEntity.ok()
-                .header("Authorization", generateJwt(authenticationDto))
+                .header("Authorization", generateJwt(authenticationDto, sessionId))
                 .body(authenticationDto);
     }
 }

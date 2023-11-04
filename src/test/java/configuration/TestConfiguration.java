@@ -9,7 +9,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import ru.tonychem.aop.ControllerAuditAspect;
+//import ru.tonychem.aop.ControllerAuditAspect;
 import ru.tonychem.logging.Logger;
 import ru.tonychem.logging.PGSQLLoggerImpl;
 import ru.tonychem.util.JwtUtils;
@@ -48,15 +48,15 @@ public class TestConfiguration {
                 postgreSQLContainer.getJdbcUrl(), schema);
     }
 
-    /**
-     * Аспект для логгирования контроллера
-     */
-    @Bean
-    public ControllerAuditAspect controllerAuditAspect() {
-        ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
-        aspect.setLogger(logger());
-        return aspect;
-    }
+//    /**
+//     * Аспект для логгирования контроллера
+//     */
+//    @Bean
+//    public ControllerAuditAspect controllerAuditAspect() {
+//        ControllerAuditAspect aspect = Aspects.aspectOf(ControllerAuditAspect.class);
+//        aspect.setLogger(logger());
+//        return aspect;
+//    }
 
     @Bean
     public void configureJwtUtils() {

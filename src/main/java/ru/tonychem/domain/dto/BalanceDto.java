@@ -1,4 +1,4 @@
-package ru.tonychem.application.model.dto;
+package ru.tonychem.domain.dto;
 
 
 import lombok.AllArgsConstructor;
