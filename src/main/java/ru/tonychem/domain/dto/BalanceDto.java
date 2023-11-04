@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+/**
+ * Информация о балансе пользователя
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

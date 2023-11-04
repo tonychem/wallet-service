@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import ru.tonychem.aop.annotations.validation.NotBlank;
 import ru.tonychem.aop.annotations.validation.Validated;
 
+/**
+ * Входящий пользовательский запрос на аутентификацию с незашифрованным паролем
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

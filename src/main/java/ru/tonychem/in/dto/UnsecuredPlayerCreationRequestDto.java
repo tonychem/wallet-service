@@ -7,6 +7,9 @@ import ru.tonychem.aop.annotations.validation.NotBlank;
 import ru.tonychem.aop.annotations.validation.Validated;
 
 
+/**
+ * Входящий пользовательский запрос на регистрацию нового пользователя с незашифрованным паролем
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

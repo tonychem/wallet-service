@@ -6,6 +6,9 @@ import lombok.Value;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * DTO-класс транзакции
+ */
 @Value
 public class TransactionDto {
     UUID id;

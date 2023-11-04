@@ -8,6 +8,9 @@ import ru.tonychem.aop.annotations.validation.Validated;
 
 import java.util.Collection;
 
+/**
+ * Пользовательский список id транзакций в строковом представлении для подтверждения/отклонения
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

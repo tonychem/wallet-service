@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Информация о новом пользователе, содержащая пароль в зашифрованном виде
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

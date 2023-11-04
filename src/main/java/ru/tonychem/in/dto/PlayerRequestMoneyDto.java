@@ -7,6 +7,9 @@ import ru.tonychem.aop.annotations.validation.NotBlank;
 import ru.tonychem.aop.annotations.validation.NotNull;
 import ru.tonychem.aop.annotations.validation.Validated;
 
+/**
+ * Пользовательский запрос на получение денежных средств от другого пользователя
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
