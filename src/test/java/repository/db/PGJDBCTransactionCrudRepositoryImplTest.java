@@ -1,14 +1,11 @@
 package repository.db;
 
-import domain.Transaction;
-import domain.TransferRequestStatus;
-import exception.TransactionStatusException;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import repository.AbstractPGSQLRepositoryConsumer;
-import repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
+import ru.tonychem.domain.Transaction;
+import ru.tonychem.domain.TransferRequestStatus;
+import ru.tonychem.exception.model.TransactionStatusException;
+import ru.tonychem.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -135,7 +132,7 @@ class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGSQLRepositoryCon
     @BeforeEach
     public void initTransactionRepository() {
         transactionRepository = new PGJDBCTransactionCrudRepositoryImpl(postgres.getJdbcUrl(),
-                postgres.getUsername(), postgres.getPassword(), properties.getProperty("domain.schema.name"));
+                postgres.getUsername(), postgres.getPassword(), businessSchema);
     }
 
     @BeforeAll

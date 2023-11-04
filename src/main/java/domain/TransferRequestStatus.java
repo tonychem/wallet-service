@@ -1,8 +1,0 @@
-package domain;
-
-/**
- * Статус денежной транзакции
- */
-public enum TransferRequestStatus {
-    FAILED, PENDING, APPROVED, DECLINED
-}

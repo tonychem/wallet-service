@@ -1,13 +1,14 @@
 package repository.db;
 
-import domain.Player;
-import exception.NoSuchPlayerException;
-import exception.PlayerAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import repository.AbstractPGSQLRepositoryConsumer;
-import repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
+import ru.tonychem.domain.Player;
+import ru.tonychem.exception.model.NoSuchPlayerException;
+import ru.tonychem.exception.model.PlayerAlreadyExistsException;
+import ru.tonychem.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 
 import java.math.BigDecimal;
 
@@ -130,6 +131,6 @@ class PGJDBCPlayerCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer
     @BeforeEach
     public void initPlayerRepository() {
         playerRepository = new PGJDBCPlayerCrudRepositoryImpl(postgres.getJdbcUrl(), postgres.getUsername(),
-                postgres.getPassword(), properties.getProperty("domain.schema.name"));
+                postgres.getPassword(), businessSchema);
     }
 }

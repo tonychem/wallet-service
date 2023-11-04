@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <changeSet id="002-data-import" author="tonychem">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="players"/>
+            <tableExists tableName="transactions"/>
+            <sequenceExists sequenceName="player_id_sequence"/>
+            <dbms type="postgresql"/>
+        </preConditions>
+        
+        <insert tableName="players">
+            <column name="id" valueSequenceNext="player_id_sequence" autoIncrement="false"/>
+            <column name="username" value="admin"/>
+            <column name="login" value="admin"/>
+            <!--password is MD5-digested value for "admin"-->
+            <column name="password" value="\x21232f297a57a5a743894a0e4a801fc3"/>
+            <column name="balance" value="5.000"/>
+        </insert>
+
+        <insert tableName="players">
+            <column name="id" valueSequenceNext="player_id_sequence" autoIncrement="false"/>
+            <column name="username" value="user"/>
+            <column name="login" value="user"/>
+            <!--password is MD5-digested value for "user"-->
+            <column name="password" value="\xee11cbb19052e40b07aac0ca060c23ee"/>
+            <column name="balance" value="10.000"/>
+        </insert>
+
+        <insert tableName="transactions">
+            <column name="id" value="7b65505d-f04f-4b4d-a179-8277c288081a"/>
+            <column name="status" value="PENDING"/>
+            <column name="sender" value="admin"/>
+            <column name="recipient" value="user"/>
+            <column name="amount" value="2.000"/>
+        </insert>
+
+        <insert tableName="transactions">
+            <column name="id" value="dd49e541-45af-47ff-827c-b4f8f828857b"/>
+            <column name="status" value="APPROVED"/>
+            <column name="sender" value="admin"/>
+            <column name="recipient" value="user"/>
+            <column name="amount" value="1.000"/>
+        </insert>
+
+        <insert tableName="transactions">
+            <column name="id" value="e97668d0-96a0-47bc-9202-fc04982a0b5e"/>
+            <column name="status" value="PENDING"/>
+            <column name="sender" value="user"/>
+            <column name="recipient" value="admin"/>
+            <column name="amount" value="1.000"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
