@@ -1,9 +1,9 @@
 package ru.yandex.wallet.in.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -20,7 +20,6 @@ import ru.yandex.wallet.service.PlayerSessionService;
 
 import java.util.UUID;
 
-@Api(description = "Авторизация игроков")
 @RestController
 @RequestMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -33,10 +32,10 @@ public class AuthenticationController extends AbstractTokenProducer {
     @Value("${jwt.secret}")
     private String secret;
 
-    @ApiOperation(value = "Получение токена авторизации")
+    @Operation(summary = "Получение токена авторизации")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 400, message = "Часть требуемых данных отсутствует/не существует связка login-password")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "Часть требуемых данных отсутствует/не существует связка login-password", content = @Content)}
     )
     @PostMapping
     public ResponseEntity<AuthenticatedPlayerDto> authenticate(@RequestBody UnsecuredAuthenticationRequestDto requestDto)

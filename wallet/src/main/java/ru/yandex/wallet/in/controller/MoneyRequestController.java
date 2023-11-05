@@ -1,9 +1,9 @@
 package ru.yandex.wallet.in.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -19,7 +19,6 @@ import ru.yandex.wallet.service.PlayerSessionService;
 
 import java.util.Collection;
 
-@Api(description = "Взаимодействие с денежными запросами")
 @RestController
 @RequestMapping(value = "/player-management/money-request", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -32,10 +31,10 @@ public class MoneyRequestController extends AbstractTokenConsumer {
     @Value("${jwt.secret}")
     private String secret;
 
-    @ApiOperation("Получение списка неподтвержденных денежных запросов")
+    @Operation(summary = "Получение списка неподтвержденных денежных запросов")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @GetMapping
     public ResponseEntity<Collection<MoneyTransferRequest>> getPendingMoneyRequests(@RequestHeader("Authorization") String authToken)
@@ -49,11 +48,11 @@ public class MoneyRequestController extends AbstractTokenConsumer {
         return ResponseEntity.ok(moneyTransferRequests);
     }
 
-    @ApiOperation("Публикация запроса на получение денежных средств")
+    @Operation(summary = "Публикация запроса на получение денежных средств")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 400, message = "Ошибка валидации полей JSON объекта"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации полей JSON объекта", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @PostMapping
     public ResponseEntity<?> requestMoney(@RequestHeader("Authorization") String authToken,
@@ -66,10 +65,10 @@ public class MoneyRequestController extends AbstractTokenConsumer {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation("Подтверждение входящих запросов на отправку денежных средств")
+    @Operation(summary = "Подтверждение входящих запросов на отправку денежных средств")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @PostMapping("/approve")
     public ResponseEntity<?> approvePendingMoneyRequests(@RequestHeader("Authorization") String authToken,
@@ -83,10 +82,10 @@ public class MoneyRequestController extends AbstractTokenConsumer {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation("Отклонение входящих запросов на отправку денежных средств")
+    @Operation(summary = "Отклонение входящих запросов на отправку денежных средств")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @PostMapping("/decline")
     public ResponseEntity<?> declinePendingMoneyRequests(@RequestHeader("Authorization") String authToken,

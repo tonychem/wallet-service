@@ -1,6 +1,8 @@
 package ru.yandex.wallet.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -28,5 +30,12 @@ public class ApplicationConfiguration {
         registrationBean.addUrlPatterns("/logout", "/player-management/*");
 
         return registrationBean;
+    }
+
+    @Bean
+    public OpenAPI springShopOpenAPI() {
+        return new OpenAPI()
+                .info(new Info().title("Wallet service")
+                        .description("API documentation"));
     }
 }

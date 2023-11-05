@@ -1,9 +1,9 @@
 package ru.yandex.wallet.in.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,6 @@ import ru.yandex.wallet.service.PlayerSessionService;
 
 import java.util.UUID;
 
-@Api(description = "Регистрация новых пользователей")
 @RestController
 @RequestMapping(value = "/registration")
 @RequiredArgsConstructor
@@ -31,11 +30,11 @@ public class RegistrationController extends AbstractTokenProducer {
     @Value("${jwt.secret}")
     private String secret;
 
-    @ApiOperation("Регистрация пользователя")
+    @Operation(summary = "Регистрация пользователя")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 400, message = "Ошибка валидации полей JSON объекта или такой пользователь уже существует"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "400", description = "Ошибка валидации полей JSON объекта или такой пользователь уже существует", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @PostMapping
     public ResponseEntity<AuthenticatedPlayerDto> registerPlayer(@RequestBody UnsecuredPlayerCreationRequestDto

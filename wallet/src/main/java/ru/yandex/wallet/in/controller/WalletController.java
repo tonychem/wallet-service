@@ -1,9 +1,9 @@
 package ru.yandex.wallet.in.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -19,7 +19,6 @@ import ru.yandex.wallet.service.PlayerSessionService;
 
 import java.util.Collection;
 
-@Api(description = "Действия с кошельком")
 @RestController
 @RequestMapping(value = "/player-management/wallet", consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
@@ -32,10 +31,10 @@ public class WalletController extends AbstractTokenConsumer {
     @Value("${jwt.secret}")
     private String secret;
 
-    @ApiOperation("Получение баланса игрока")
+    @Operation(summary = "Получение баланса игрока")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @GetMapping("/balance")
     public ResponseEntity<BalanceDto> getBalance(@RequestHeader("Authorization") String authToken)
@@ -48,10 +47,10 @@ public class WalletController extends AbstractTokenConsumer {
         return ResponseEntity.ok(balance);
     }
 
-    @ApiOperation("Получение истории движения денежных средств")
+    @Operation(summary = "Получение истории движения денежных средств")
     @ApiResponses(
-            {@ApiResponse(code = 200, message = "OK"),
-                    @ApiResponse(code = 403, message = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере")}
+            {@ApiResponse(responseCode = "200", description = "OK", content = @Content),
+                    @ApiResponse(responseCode = "403", description = "Отсутствует токен авторизации либо пользовательская сессия отсутвует/закрыта на сервере", content = @Content)}
     )
     @GetMapping("/history")
     public ResponseEntity<Collection<TransactionDto>> getHistory(@RequestHeader("Authorization") String authToken,
