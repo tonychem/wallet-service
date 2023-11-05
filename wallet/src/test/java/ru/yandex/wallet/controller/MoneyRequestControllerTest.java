@@ -4,18 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.yandex.wallet.config.JwtTokenFilter;
+import ru.yandex.wallet.config.ApplicationConfiguration;
 import ru.yandex.wallet.domain.dto.MoneyTransferRequest;
 import ru.yandex.wallet.domain.dto.MoneyTransferResponse;
-import ru.yandex.wallet.exception.GlobalExceptionHandler;
 import ru.yandex.wallet.in.controller.MoneyRequestController;
 import ru.yandex.wallet.in.dto.PlayerRequestMoneyDto;
 import ru.yandex.wallet.in.dto.TransactionsListDto;
@@ -37,31 +35,30 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@ContextConfiguration(classes = TestConfiguration.class)
-@ExtendWith(SpringExtension.class)
+@WebMvcTest(MoneyRequestController.class)
+@ImportAutoConfiguration(ApplicationConfiguration.class)
 public class MoneyRequestControllerTest {
+    @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
     private PlayerService mockPlayerService;
+
+    @MockBean
     private PlayerSessionService mockPlayerSessionService;
 
     @Value("${jwt.secret}")
     private String secret;
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
     private String validJwtToken;
+
     private String invalidJwtToken;
 
     @BeforeEach
     public void init() {
-        mockPlayerService = Mockito.mock(PlayerService.class);
-        mockPlayerSessionService = Mockito.mock(PlayerSessionService.class);
-
-        mvc = MockMvcBuilders
-                .standaloneSetup(new MoneyRequestController(mockPlayerService, mockPlayerSessionService))
-                .setControllerAdvice(new GlobalExceptionHandler())
-                .addFilters(new JwtTokenFilter(objectMapper))
-                .build();
-
         validJwtToken = generateValidTestToken();
         invalidJwtToken = "invalid.jwt.token";
     }

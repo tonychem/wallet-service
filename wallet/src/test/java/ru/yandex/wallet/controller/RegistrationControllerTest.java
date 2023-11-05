@@ -1,18 +1,16 @@
 package ru.yandex.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.yandex.wallet.config.ApplicationConfiguration;
 import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
-import ru.yandex.wallet.exception.GlobalExceptionHandler;
 import ru.yandex.wallet.in.controller.RegistrationController;
 import ru.yandex.wallet.in.dto.UnsecuredPlayerCreationRequestDto;
 import ru.yandex.wallet.service.PlayerService;
@@ -28,23 +26,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@ContextConfiguration(classes = TestConfiguration.class)
-@ExtendWith(SpringExtension.class)
+@WebMvcTest(RegistrationController.class)
+@ImportAutoConfiguration(ApplicationConfiguration.class)
 public class RegistrationControllerTest {
+    @Autowired
     private MockMvc mvc;
-    private PlayerService mockPlayerService;
-    private PlayerSessionService mockPlayerSessionService;
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
-    @BeforeEach
-    public void init() {
-        mockPlayerService = Mockito.mock(PlayerService.class);
-        mockPlayerSessionService = Mockito.mock(PlayerSessionService.class);
-        mvc = MockMvcBuilders
-                .standaloneSetup(new RegistrationController(mockPlayerService, mockPlayerSessionService))
-                .setControllerAdvice(new GlobalExceptionHandler())
-                .build();
-    }
+    @MockBean
+    private PlayerService mockPlayerService;
+
+    @MockBean
+    private PlayerSessionService mockPlayerSessionService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @DisplayName("Should register player when data is valid")
     @Test

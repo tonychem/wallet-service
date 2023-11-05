@@ -1,18 +1,16 @@
 package ru.yandex.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.yandex.wallet.config.ApplicationConfiguration;
 import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
-import ru.yandex.wallet.exception.GlobalExceptionHandler;
 import ru.yandex.wallet.in.controller.AuthenticationController;
 import ru.yandex.wallet.in.dto.UnsecuredAuthenticationRequestDto;
 import ru.yandex.wallet.service.PlayerService;
@@ -28,25 +26,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@ContextConfiguration(classes = TestConfiguration.class)
-@ExtendWith(SpringExtension.class)
+@WebMvcTest(AuthenticationController.class)
+@ImportAutoConfiguration(ApplicationConfiguration.class)
 public class AuthenticationControllerTest {
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     private MockMvc mvc;
+
+    @MockBean
     private PlayerService mockPlayerService;
+
+    @MockBean
     private PlayerSessionService mockPlayerSessionService;
-
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-    @BeforeEach
-    public void init() {
-        mockPlayerService = Mockito.mock(PlayerService.class);
-        mockPlayerSessionService = Mockito.mock(PlayerSessionService.class);
-
-        mvc = MockMvcBuilders
-                .standaloneSetup(new AuthenticationController(mockPlayerService, mockPlayerSessionService))
-                .setControllerAdvice(new GlobalExceptionHandler())
-                .build();
-    }
 
     @DisplayName("Should authenticate player when data is valid")
     @Test

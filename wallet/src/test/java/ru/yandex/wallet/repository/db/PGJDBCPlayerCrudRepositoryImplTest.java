@@ -3,10 +3,21 @@ package ru.yandex.wallet.repository.db;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.yandex.wallet.domain.Player;
 import ru.yandex.wallet.exception.model.NoSuchPlayerException;
 import ru.yandex.wallet.exception.model.PlayerAlreadyExistsException;
-import ru.yandex.wallet.repository.AbstractPGSQLRepositoryConsumer;
 import ru.yandex.wallet.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 
 import java.math.BigDecimal;
@@ -15,8 +26,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Postgres Player Repository test")
-class PGJDBCPlayerCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer {
+@Transactional
+@Testcontainers
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
+class PGJDBCPlayerCrudRepositoryImplTest {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private PGJDBCPlayerCrudRepositoryImpl playerRepository;
+
+    @Container
+    protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
+
+    @DynamicPropertySource
+    static void postgresqlProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
+    @BeforeEach
+    public void initRepository() {
+        playerRepository = new PGJDBCPlayerCrudRepositoryImpl(jdbcTemplate);
+    }
 
     @DisplayName("Should create a new unique player")
     @Test
@@ -125,11 +159,5 @@ class PGJDBCPlayerCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer
     public void shouldThrowExceptionWhenUpdatingBalanceForNonExistingPlayer() {
         assertThatThrownBy(() -> playerRepository.setBalance("no-op", BigDecimal.TEN))
                 .isInstanceOf(NoSuchPlayerException.class);
-    }
-
-    @BeforeEach
-    public void initPlayerRepository() {
-        playerRepository = new PGJDBCPlayerCrudRepositoryImpl(postgres.getJdbcUrl(), postgres.getUsername(),
-                postgres.getPassword(), businessSchema);
     }
 }

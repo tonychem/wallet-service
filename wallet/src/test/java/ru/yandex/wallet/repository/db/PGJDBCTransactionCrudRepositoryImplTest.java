@@ -1,12 +1,25 @@
 package ru.yandex.wallet.repository.db;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.yandex.wallet.domain.Transaction;
 import ru.yandex.wallet.domain.TransferRequestStatus;
 import ru.yandex.wallet.exception.model.TransactionStatusException;
-import ru.yandex.wallet.repository.AbstractPGSQLRepositoryConsumer;
 import ru.yandex.wallet.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
-
 
 import java.util.Collection;
 import java.util.UUID;
@@ -15,11 +28,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Postgres Transaction Repository test")
-class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGSQLRepositoryConsumer {
-    private PGJDBCTransactionCrudRepositoryImpl transactionRepository;
+@Transactional
+@Testcontainers
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
+class PGJDBCTransactionCrudRepositoryImplTest {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private static UUID transactionIdFromUserToAdmin;
     private static UUID transactionIdFromAdminToUserPending;
     private static UUID transactionIdFromAdminToUserApproved;
+
+    private PGJDBCTransactionCrudRepositoryImpl transactionRepository;
+
+    @Container
+    protected static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
+
+    @DynamicPropertySource
+    static void postgresqlProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
+    @BeforeEach
+    public void initRepository() {
+        transactionRepository = new PGJDBCTransactionCrudRepositoryImpl(jdbcTemplate);
+    }
 
     @DisplayName("Should return existing transaction by id")
     @Test
@@ -132,8 +169,7 @@ class PGJDBCTransactionCrudRepositoryImplTest extends AbstractPGSQLRepositoryCon
 
     @BeforeEach
     public void initTransactionRepository() {
-        transactionRepository = new PGJDBCTransactionCrudRepositoryImpl(postgres.getJdbcUrl(),
-                postgres.getUsername(), postgres.getPassword(), businessSchema);
+        transactionRepository = new PGJDBCTransactionCrudRepositoryImpl(jdbcTemplate);
     }
 
     @BeforeAll

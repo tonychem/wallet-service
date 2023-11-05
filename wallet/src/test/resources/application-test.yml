@@ -1,17 +1,8 @@
 spring:
-  datasource:
-    url: jdbc:tc:postgresql:16.0:///wallet
-    username: test
-    password: test
-    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   liquibase:
     change-log: classpath:test-db/changelog/master-changelog.xml
-    default-schema: wallet
-    liquibase-schema: migration
-
-schema:
-  domain:
-    name: public
+    default-schema: public
+    liquibase-schema: public
 
 jwt:
   secret: Yt+rgHMpPlNz8BVdp4MEYy9BzxnXiYIf3fuAV4DZ0pTq4/TdGDePZpur/jaRaSjY0ohMXaeYIciqhH5BLrLSSW36Rlzda09IK3FKZRJqIGRgsu1oj6DUObHIyW/TmginGIAQo0BE/3IddweWQvMIi69pmGoI+gWQUu1UnMrIQy5LQg70QlqEUkG0k6e2c+JvqaAYkvcsRAkZPwHj7ZVYsl9W1Xo1lp7lUMy9m/ExT84h7kDTSAwGg9VGfDcrC62dgp10QYLXs++3E692A3JcyUknVanR5fjRet3N6BX4if9uBvtR+2RW3e2Rp5CK6IJdaw3dYx11SErRO9Y7Ee/QD1vbbtonEMPReD9jiGwEGiQ=
