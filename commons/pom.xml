@@ -9,7 +9,5 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>ru.tonychem</groupId>
     <artifactId>commons</artifactId>
-
 </project>
