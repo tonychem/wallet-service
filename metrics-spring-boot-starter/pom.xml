@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ru.yandex</groupId>
+        <groupId>ru.tonychem</groupId>
         <artifactId>wallet-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>ru.yandex.tonychem</groupId>
-    <artifactId>metrics</artifactId>
+    <groupId>ru.tonychem</groupId>
+    <artifactId>metrics-spring-boot-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>metrics</name>
@@ -22,17 +22,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>

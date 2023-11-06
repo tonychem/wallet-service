@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>ru.yandex</groupId>
+    <groupId>ru.tonychem</groupId>
     <artifactId>wallet-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -20,7 +20,7 @@
 
     <modules>
         <module>wallet</module>
-        <module>metrics</module>
+        <module>metrics-spring-boot-starter</module>
         <module>commons</module>
     </modules>
 

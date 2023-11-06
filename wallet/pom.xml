@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ru.yandex</groupId>
+        <groupId>ru.tonychem</groupId>
         <artifactId>wallet-service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -110,8 +110,8 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.yandex.tonychem</groupId>
-            <artifactId>metrics</artifactId>
+            <groupId>ru.tonychem</groupId>
+            <artifactId>metrics-spring-boot-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
