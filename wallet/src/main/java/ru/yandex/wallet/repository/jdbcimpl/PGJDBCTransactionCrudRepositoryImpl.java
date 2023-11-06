@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.wallet.domain.Transaction;
 import ru.yandex.wallet.domain.TransferRequestStatus;
 import ru.yandex.wallet.domain.dto.MoneyTransferRequest;
-import ru.yandex.wallet.exception.model.NoSuchTransactionException;
-import ru.yandex.wallet.exception.model.TransactionAlreadyExistsException;
-import ru.yandex.wallet.exception.model.TransactionStatusException;
+import ru.yandex.wallet.exception.exceptions.NoSuchTransactionException;
+import ru.yandex.wallet.exception.exceptions.TransactionAlreadyExistsException;
+import ru.yandex.wallet.exception.exceptions.TransactionStatusException;
 import ru.yandex.wallet.repository.TransactionCrudRepository;
 
 import java.sql.PreparedStatement;

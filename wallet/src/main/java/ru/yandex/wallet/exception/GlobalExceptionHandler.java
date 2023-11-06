@@ -1,10 +1,11 @@
 package ru.yandex.wallet.exception;
 
+import model.dto.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.wallet.exception.model.*;
+import ru.yandex.wallet.exception.exceptions.*;
 
 import java.security.SignatureException;
 

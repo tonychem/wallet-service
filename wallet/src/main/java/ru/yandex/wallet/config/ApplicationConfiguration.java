@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import ru.yandex.metrics.performance.EnablePerformance;
 
 @Configuration
-@EnableAspectJAutoProxy
+@EnablePerformance
 public class ApplicationConfiguration {
 
     @Value("${jwt.secret}")

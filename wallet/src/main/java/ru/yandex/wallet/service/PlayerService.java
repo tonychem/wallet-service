@@ -1,8 +1,12 @@
 package ru.yandex.wallet.service;
 
-import ru.yandex.wallet.domain.dto.*;
-import ru.yandex.wallet.exception.model.BadCredentialsException;
-import ru.yandex.wallet.in.dto.*;
+import model.dto.in.*;
+import model.dto.out.AuthenticatedPlayerDto;
+import model.dto.out.BalanceDto;
+import ru.yandex.wallet.domain.dto.MoneyTransferRequest;
+import ru.yandex.wallet.domain.dto.MoneyTransferResponse;
+import ru.yandex.wallet.domain.dto.TransactionDto;
+import ru.yandex.wallet.exception.exceptions.BadCredentialsException;
 
 import java.util.Collection;
 

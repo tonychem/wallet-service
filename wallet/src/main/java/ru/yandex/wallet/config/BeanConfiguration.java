@@ -1,8 +1,8 @@
 package ru.yandex.wallet.config;
 
+import model.dto.out.AuthenticatedPlayerDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +18,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public Map<UUID,AuthenticatedPlayerDto> authentications() {
+    public Map<UUID, AuthenticatedPlayerDto> authentications() {
         return new HashMap<>();
     }
 }

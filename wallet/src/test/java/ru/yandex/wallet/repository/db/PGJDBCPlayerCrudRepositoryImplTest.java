@@ -16,8 +16,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.yandex.wallet.domain.Player;
-import ru.yandex.wallet.exception.model.NoSuchPlayerException;
-import ru.yandex.wallet.exception.model.PlayerAlreadyExistsException;
+import ru.yandex.wallet.exception.exceptions.NoSuchPlayerException;
+import ru.yandex.wallet.exception.exceptions.PlayerAlreadyExistsException;
 import ru.yandex.wallet.repository.jdbcimpl.PGJDBCPlayerCrudRepositoryImpl;
 
 import java.math.BigDecimal;

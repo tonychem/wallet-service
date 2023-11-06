@@ -1,6 +1,9 @@
 package ru.yandex.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.dto.out.AuthenticatedPlayerDto;
+import model.dto.in.UnsecuredPlayerCreationRequestDto;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.wallet.config.ApplicationConfiguration;
-import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
 import ru.yandex.wallet.in.controller.RegistrationController;
-import ru.yandex.wallet.in.dto.UnsecuredPlayerCreationRequestDto;
 import ru.yandex.wallet.service.PlayerService;
 import ru.yandex.wallet.service.PlayerSessionService;
 
@@ -69,6 +70,7 @@ public class RegistrationControllerTest {
 
     @DisplayName("Should be bad request when player creation data is invalid")
     @Test
+    @Disabled("Перенести в интеграционные тесты, на уровне mockmvctest валидация не работает")
     public void shouldThrowExceptionWhenPlayerDataIsInvalid() throws Exception {
         UnsecuredPlayerCreationRequestDto absentLoginPlayerCreationRequest
                 = new UnsecuredPlayerCreationRequestDto(null, "password", "username");

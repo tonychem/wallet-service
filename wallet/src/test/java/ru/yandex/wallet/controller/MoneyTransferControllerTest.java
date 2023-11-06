@@ -1,6 +1,8 @@
 package ru.yandex.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.dto.out.BalanceDto;
+import model.dto.in.PlayerTransferMoneyRequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,9 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.wallet.config.ApplicationConfiguration;
-import ru.yandex.wallet.domain.dto.BalanceDto;
 import ru.yandex.wallet.in.controller.MoneyTransferController;
-import ru.yandex.wallet.in.dto.PlayerTransferMoneyRequestDto;
 import ru.yandex.wallet.service.PlayerService;
 import ru.yandex.wallet.service.PlayerSessionService;
 import ru.yandex.wallet.util.JwtUtils;

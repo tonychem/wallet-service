@@ -1,6 +1,6 @@
 package ru.yandex.wallet.in.controller;
 
-import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
+import model.dto.out.AuthenticatedPlayerDto;
 import ru.yandex.wallet.util.JwtUtils;
 
 import java.util.Map;

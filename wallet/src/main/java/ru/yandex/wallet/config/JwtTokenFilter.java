@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import ru.yandex.wallet.exception.ApiException;
-import ru.yandex.wallet.exception.model.InvalidTokenException;
+import ru.yandex.wallet.exception.exceptions.InvalidTokenException;
 import ru.yandex.wallet.util.JwtUtils;
 
 import java.io.IOException;

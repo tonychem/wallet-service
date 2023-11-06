@@ -1,7 +1,7 @@
 package ru.yandex.wallet.service;
 
-import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
-import ru.yandex.wallet.exception.model.UnauthorizedOperationException;
+import model.dto.out.AuthenticatedPlayerDto;
+import ru.yandex.wallet.exception.exceptions.UnauthorizedOperationException;
 
 import java.util.UUID;
 

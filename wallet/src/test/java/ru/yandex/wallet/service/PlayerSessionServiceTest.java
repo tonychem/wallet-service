@@ -1,10 +1,10 @@
 package ru.yandex.wallet.service;
 
+import model.dto.out.AuthenticatedPlayerDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
-import ru.yandex.wallet.exception.model.UnauthorizedOperationException;
+import ru.yandex.wallet.exception.exceptions.UnauthorizedOperationException;
 import ru.yandex.wallet.service.impl.PlayerSessionServiceImpl;
 
 import java.math.BigDecimal;

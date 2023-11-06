@@ -12,13 +12,17 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.wallet.in.dto.UnpackedJwtClaims;
+import ru.yandex.metrics.audit.Audit;
+import ru.yandex.metrics.performance.Performance;
+import ru.yandex.wallet.in.UnpackedJwtClaims;
 import ru.yandex.wallet.service.PlayerSessionService;
 
 @RestController
 @RequestMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Performance
+@Audit
 public class LogoutController extends AbstractTokenConsumer {
     private final PlayerSessionService playerSessionService;
 

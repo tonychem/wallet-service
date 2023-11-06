@@ -1,6 +1,8 @@
 package ru.yandex.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import model.dto.in.PlayerRequestMoneyDto;
+import model.dto.in.TransactionsListDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,6 @@ import ru.yandex.wallet.config.ApplicationConfiguration;
 import ru.yandex.wallet.domain.dto.MoneyTransferRequest;
 import ru.yandex.wallet.domain.dto.MoneyTransferResponse;
 import ru.yandex.wallet.in.controller.MoneyRequestController;
-import ru.yandex.wallet.in.dto.PlayerRequestMoneyDto;
-import ru.yandex.wallet.in.dto.TransactionsListDto;
 import ru.yandex.wallet.service.PlayerService;
 import ru.yandex.wallet.service.PlayerSessionService;
 import ru.yandex.wallet.util.JwtUtils;

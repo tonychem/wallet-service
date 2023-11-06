@@ -5,15 +5,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import model.dto.in.PlayerRequestMoneyDto;
+import model.dto.in.TransactionsListDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.metrics.audit.Audit;
+import ru.yandex.metrics.performance.Performance;
 import ru.yandex.wallet.domain.dto.MoneyTransferRequest;
-import ru.yandex.wallet.exception.model.UnauthorizedOperationException;
-import ru.yandex.wallet.in.dto.PlayerRequestMoneyDto;
-import ru.yandex.wallet.in.dto.TransactionsListDto;
-import ru.yandex.wallet.in.dto.UnpackedJwtClaims;
+import ru.yandex.wallet.exception.exceptions.UnauthorizedOperationException;
+import ru.yandex.wallet.in.UnpackedJwtClaims;
 import ru.yandex.wallet.service.PlayerService;
 import ru.yandex.wallet.service.PlayerSessionService;
 
@@ -23,6 +25,8 @@ import java.util.Collection;
 @RequestMapping(value = "/player-management/money-request", produces = MediaType.APPLICATION_JSON_VALUE,
         consumes = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
+@Performance
+@Audit
 public class MoneyRequestController extends AbstractTokenConsumer {
 
     private final PlayerService playerService;

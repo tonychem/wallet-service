@@ -1,15 +1,15 @@
 package ru.yandex.wallet.domain.mapper;
 
+import model.dto.out.BalanceDto;
+import model.dto.in.PlayerRequestMoneyDto;
+import model.dto.in.PlayerTransferMoneyRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import ru.yandex.wallet.domain.dto.BalanceDto;
 import ru.yandex.wallet.domain.dto.MoneyTransferRequest;
 import ru.yandex.wallet.domain.dto.MoneyTransferResponse;
-import ru.yandex.wallet.in.dto.PlayerRequestMoneyDto;
-import ru.yandex.wallet.in.dto.PlayerTransferMoneyRequestDto;
 
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -7,8 +7,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.wallet.domain.Player;
-import ru.yandex.wallet.exception.model.NoSuchPlayerException;
-import ru.yandex.wallet.exception.model.PlayerAlreadyExistsException;
+import ru.yandex.wallet.exception.exceptions.NoSuchPlayerException;
+import ru.yandex.wallet.exception.exceptions.PlayerAlreadyExistsException;
 import ru.yandex.wallet.repository.PlayerCrudRepository;
 
 import java.math.BigDecimal;

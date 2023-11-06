@@ -1,9 +1,9 @@
 package ru.yandex.wallet.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import model.dto.out.AuthenticatedPlayerDto;
 import org.springframework.stereotype.Service;
-import ru.yandex.wallet.domain.dto.AuthenticatedPlayerDto;
-import ru.yandex.wallet.exception.model.UnauthorizedOperationException;
+import ru.yandex.wallet.exception.exceptions.UnauthorizedOperationException;
 import ru.yandex.wallet.service.PlayerSessionService;
 
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PlayerSessionServiceImpl implements PlayerSessionService {
-    private final Map<UUID,AuthenticatedPlayerDto> authentications;
+    private final Map<UUID, AuthenticatedPlayerDto> authentications;
 
     @Override
     public boolean exists(UUID id) throws UnauthorizedOperationException {

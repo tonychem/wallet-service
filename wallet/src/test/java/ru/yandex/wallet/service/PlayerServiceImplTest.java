@@ -1,6 +1,9 @@
 package ru.yandex.wallet.service;
 
 import lombok.SneakyThrows;
+import model.dto.in.*;
+import model.dto.out.AuthenticatedPlayerDto;
+import model.dto.out.BalanceDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +12,8 @@ import ru.yandex.wallet.domain.Player;
 import ru.yandex.wallet.domain.Transaction;
 import ru.yandex.wallet.domain.TransferRequestStatus;
 import ru.yandex.wallet.domain.dto.*;
-import ru.yandex.wallet.exception.model.BadCredentialsException;
-import ru.yandex.wallet.exception.model.DeficientBalanceException;
-import ru.yandex.wallet.in.dto.*;
+import ru.yandex.wallet.exception.exceptions.BadCredentialsException;
+import ru.yandex.wallet.exception.exceptions.DeficientBalanceException;
 import ru.yandex.wallet.repository.PlayerCrudRepository;
 import ru.yandex.wallet.repository.TransactionCrudRepository;
 import ru.yandex.wallet.service.impl.PlayerServiceImpl;

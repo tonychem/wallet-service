@@ -18,7 +18,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.yandex.wallet.domain.Transaction;
 import ru.yandex.wallet.domain.TransferRequestStatus;
-import ru.yandex.wallet.exception.model.TransactionStatusException;
+import ru.yandex.wallet.exception.exceptions.TransactionStatusException;
 import ru.yandex.wallet.repository.jdbcimpl.PGJDBCTransactionCrudRepositoryImpl;
 
 import java.util.Collection;

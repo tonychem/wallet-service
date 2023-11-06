@@ -1,6 +1,6 @@
 package ru.yandex.wallet.in.controller;
 
-import ru.yandex.wallet.in.dto.UnpackedJwtClaims;
+import ru.yandex.wallet.in.UnpackedJwtClaims;
 import ru.yandex.wallet.util.JwtUtils;
 
 import java.util.UUID;

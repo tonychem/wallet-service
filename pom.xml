@@ -18,8 +18,19 @@
     <name>wallet-service</name>
     <description>wallet</description>
 
+    <modules>
+        <module>wallet</module>
+        <module>metrics</module>
+        <module>commons</module>
+    </modules>
+
     <properties>
-        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <lombok.version>1.18.30</lombok.version>
+        <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
     </properties>
 
     <dependencies>
@@ -32,6 +43,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-maven-plugin</artifactId>
+            <version>${lombok.plugin.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

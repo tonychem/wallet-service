@@ -1,6 +1,9 @@
 package ru.yandex.wallet.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import model.dto.in.*;
+import model.dto.out.AuthenticatedPlayerDto;
+import model.dto.out.BalanceDto;
 import org.springframework.stereotype.Service;
 import ru.yandex.wallet.domain.Player;
 import ru.yandex.wallet.domain.Transaction;
@@ -9,10 +12,9 @@ import ru.yandex.wallet.domain.dto.*;
 import ru.yandex.wallet.domain.mapper.MoneyTransferMapper;
 import ru.yandex.wallet.domain.mapper.PlayerMapper;
 import ru.yandex.wallet.domain.mapper.TransactionMapper;
-import ru.yandex.wallet.exception.model.BadCredentialsException;
-import ru.yandex.wallet.exception.model.DeficientBalanceException;
-import ru.yandex.wallet.exception.model.PlayerAlreadyExistsException;
-import ru.yandex.wallet.in.dto.*;
+import ru.yandex.wallet.exception.exceptions.BadCredentialsException;
+import ru.yandex.wallet.exception.exceptions.DeficientBalanceException;
+import ru.yandex.wallet.exception.exceptions.PlayerAlreadyExistsException;
 import ru.yandex.wallet.repository.PlayerCrudRepository;
 import ru.yandex.wallet.repository.TransactionCrudRepository;
 import ru.yandex.wallet.service.PlayerAction;
