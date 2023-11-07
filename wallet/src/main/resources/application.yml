@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/wallet?currentSchema=wallet
-    username: walletserviceroot
-    password: walletservicerootpassword
+    url: ${PG_URL:jdbc:postgresql://localhost:5433/wallet?currentSchema=wallet}
+    username: ${PG_username:walletserviceroot}
+    password: ${PG_password:walletservicerootpassword}
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:db/changelog/master-changelog.xml

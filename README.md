@@ -32,11 +32,7 @@ git clone --branch hw5 https://github.com/tonychem/wallet-service.git
 ```shell
 mvn package
 ```
-3. Запустить PostgreSQL в докере. Для этого запустить команду из той же папки:
+3. Находясь в этой же папке, ввести команду, чтобы поднять контейнер с приложением и базой данных: 
 ```shell
-docker compose -f ./wallet/src/main/java/docker-compose.yml up -d
-```
-4. Запустить .jar файл (wallet-1.0-SNAPSHOT.jar) из папки ./wallet/target:
-```shell
-java -jar wallet/target/wallet-1.0-SNAPSHOT.jar
+docker compose up
 ```
