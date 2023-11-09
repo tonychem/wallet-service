@@ -12,8 +12,12 @@ import ru.yandex.metrics.audit.logging.PGSQLLoggerImpl;
 @EnableAspectJAutoProxy
 @ConditionalOnBean(JdbcTemplate.class)
 public class AuditConfig {
-    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public AuditConfig(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Bean
     public ControllerAuditAspect controllerAuditAspect() {
