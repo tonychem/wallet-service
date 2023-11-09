@@ -1,0 +1,3 @@
+ru.yandex.metrics.performance.PerformanceConfig
+ru.yandex.metrics.validation.ValidationConfig
+ru.yandex.metrics.audit.AuditConfig
