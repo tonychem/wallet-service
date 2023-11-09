@@ -4,71 +4,43 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0-SNAPSHOT</version>
-        <relativePath/>
+        <groupId>ru.tonychem</groupId>
+        <artifactId>wallet-service</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>ru.tonychem</groupId>
-    <artifactId>wallet-service</artifactId>
+    <artifactId>metrics-spring-boot-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
-    <name>wallet-service</name>
-    <description>wallet</description>
-
-    <modules>
-        <module>wallet</module>
-        <module>metrics-spring-boot-starter</module>
-        <module>commons</module>
-    </modules>
+    <name>metrics</name>
+    <description>metrics</description>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <lombok.version>1.18.30</lombok.version>
-        <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
+        <plugin.aspectj.version>1.14.0</plugin.aspectj.version>
+        <aspectj.version>1.9.19</aspectj.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok-maven-plugin</artifactId>
-            <version>${lombok.plugin.version}</version>
-            <scope>provided</scope>
+            <groupId>ru.tonychem</groupId>
+            <artifactId>commons</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <repositories>
-        <repository>
-            <id>central</id>
-            <name>Maven Central</name>
-            <layout>default</layout>
-            <url>https://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
@@ -87,6 +59,7 @@
             </releases>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>spring-milestones</id>
@@ -96,6 +69,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
+
         <pluginRepository>
             <id>spring-snapshots</id>
             <name>Spring Snapshots</name>
@@ -105,5 +79,4 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
 </project>

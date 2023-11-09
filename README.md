@@ -11,7 +11,8 @@ Wallet-service
 Взаимодействие с пользователем происходит через REST API. Для целей тестирования к моменту первого запуска в БД 
 находится два пользователя: admin(login=admin, pwd=admin) и user(login=user, pwd=user).
 
-Описание эндпоинтов доступно в Swagger-UI после запуска приложения по запросу на эндпоинт: /swagger-ui.html 
+Описание эндпоинтов доступно в Swagger-UI после запуска приложения по запросу на эндпоинт: /swagger-ui.html, 
+либо OpeanApi по эндпоинту /api-docs 
 
 ----
 Под капотом на уровне приложения создан примитивный механизм безопасности посредством создания сессий: 
@@ -25,14 +26,13 @@ Wallet-service
 Для запуска приложения:
 1. Клонировать проект 
 ```shell
-git clone --branch hw4 https://github.com/tonychem/wallet-service.git
+git clone --branch hw5 https://github.com/tonychem/wallet-service.git
 ```
 2. Перейти в папку проекта *wallet-service* в командной строке и собрать проект локально, используя Maven:
 ```shell
 mvn package
 ```
-3. Запустить PostgreSQL в докере. Для этого запустить команду из той же папки:
+3. Находясь в этой же папке, ввести команду, чтобы поднять контейнер с приложением и базой данных: 
 ```shell
-docker compose -f ./src/main/java/docker-compose.yml up -d
+docker compose up
 ```
-4. Развернуть .war файл из папки ./target в контейнере сервлетов. 

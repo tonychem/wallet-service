@@ -1,0 +1,24 @@
+version: '3.0'
+services:
+  postgres-db:
+    image: postgres:latest
+    container_name: wallet-postgres-db-container
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: walletserviceroot
+      POSTGRES_PASSWORD: walletservicerootpassword
+      POSTGRES_DB: wallet
+    volumes:
+      - ./pg-init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  wallet-service:
+    build: wallet/.
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db
+    environment:
+      PG_URL: jdbc:postgresql://postgres-db:5432/wallet?currentSchema=wallet
+      PG_username: walletserviceroot
+      PG_password: walletservicerootpassword
